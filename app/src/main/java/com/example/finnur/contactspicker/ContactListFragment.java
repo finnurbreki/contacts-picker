@@ -6,6 +6,7 @@ package com.example.finnur.contactspicker;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 
 /**
  * A Contact List fragment for showing details about registered contacts in a {@link ListView}.
@@ -27,6 +32,11 @@ import android.widget.ListView;
 public class ContactListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
+    private static final int ICON_SIZE_DP = 32;
+    private static final int ICON_CORNER_RADIUS_DP = 20;
+    private static final int ICON_TEXT_SIZE_DP = 12;
+    private static final int ICON_DEFAULT_BACKGROUND_COLOR = 0xFF323232;
+
     /*
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
@@ -60,6 +70,8 @@ public class ContactListFragment extends ListFragment implements
     private static final int CONTACT_ID_INDEX = 0;
     // The column index for the LOOKUP_KEY column
     private static final int LOOKUP_KEY_INDEX = 1;
+    // The column index for the DISPLAY_NAME column
+    private static final int DISPLAY_NAME_INDEX = 2;
 
     // Defines the text expression
     @SuppressLint("InlinedApi")
@@ -77,6 +89,9 @@ public class ContactListFragment extends ListFragment implements
 
     // An adapter that binds the result Cursor to the ListView
     private SimpleCursorAdapter mCursorAdapter;
+
+    // A helpler class to draw the icon for each contact.
+    private RoundedIconGenerator mIconGenerator;
 
     public ContactListFragment() {
         // Required empty public constructor
@@ -107,6 +122,33 @@ public class ContactListFragment extends ListFragment implements
                 null,
                 FROM_COLUMNS, TO_IDS,
                 0);
+
+        mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
+                ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
+                ICON_TEXT_SIZE_DP);
+
+        mCursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                if (view.getId() == android.R.id.text1) {
+                    // While drawing the text, we can draw the image for each contact.
+                    String displayName = cursor.getString(DISPLAY_NAME_INDEX);
+                    String displayChars = "";
+                    if (displayName.length() > 0) {
+                        displayChars += displayName.charAt(0);
+                        String[] parts = displayName.split(" ");
+                        if (parts.length > 1) {
+                            displayChars += parts[parts.length -1].charAt(0);
+                        }
+                    }
+                    LinearLayout layout = (LinearLayout) view.getParent();
+                    Bitmap icon = mIconGenerator.generateIconForText(displayChars, 2);
+                    ImageView image = (ImageView) layout.findViewById(R.id.image);
+                    image.setImageBitmap(icon);
+                    // Fall-through to the return statement below is on purpose (to draw the text).
+                }
+                return false;
+            }
+        });
 
         // Sets the adapter for the ListView
         mContactsList.setAdapter(mCursorAdapter);
