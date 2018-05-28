@@ -4,7 +4,9 @@
 
 package com.example.finnur.contactspicker;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 
@@ -36,6 +40,8 @@ public class ContactListFragment extends ListFragment implements
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
     private static final int ICON_DEFAULT_BACKGROUND_COLOR = 0xFF323232;
+
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 1;
 
     /*
      * Defines an array that contains column names to move from
@@ -107,7 +113,27 @@ public class ContactListFragment extends ListFragment implements
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                PermissionChecker.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else {
+            initialize();
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initialize();
+            } else {
+                Toast.makeText(getActivity(), "Missing permission: contacts", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void initialize() {
         // Gets the ListView from the View list of the parent activity
         mContactsList =
                 (ListView) getActivity().findViewById(android.R.id.list);
