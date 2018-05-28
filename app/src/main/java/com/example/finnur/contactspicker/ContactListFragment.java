@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.widget.RoundedIconGenerator;
  */
 public class ContactListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
+        SimpleCursorAdapter.ViewBinder,
         AdapterView.OnItemClickListener {
     private static final int ICON_SIZE_DP = 32;
     private static final int ICON_CORNER_RADIUS_DP = 20;
@@ -49,9 +51,9 @@ public class ContactListFragment extends ListFragment implements
      */
     @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                ContactsContract.Contacts.DISPLAY_NAME
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
+                    ContactsContract.Contacts.DISPLAY_NAME
     };
 
     /*
@@ -72,11 +74,9 @@ public class ContactListFragment extends ListFragment implements
                 ContactsContract.Contacts.DISPLAY_NAME
     };
 
-    // The column index for the _ID column
+    // Column ids.
     private static final int CONTACT_ID_INDEX = 0;
-    // The column index for the LOOKUP_KEY column
     private static final int LOOKUP_KEY_INDEX = 1;
-    // The column index for the DISPLAY_NAME column
     private static final int DISPLAY_NAME_INDEX = 2;
 
     // Defines the text expression
@@ -134,53 +134,71 @@ public class ContactListFragment extends ListFragment implements
     }
 
     private void initialize() {
-        // Gets the ListView from the View list of the parent activity
         mContactsList =
                 (ListView) getActivity().findViewById(android.R.id.list);
-
-        // Set the item click listener to be the current fragment.
         mContactsList.setOnItemClickListener(this);
 
-        // Gets a CursorAdapter
+        mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
+                ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
+                ICON_TEXT_SIZE_DP);
+
         mCursorAdapter = new SimpleCursorAdapter(
                 getActivity(),
                 R.layout.contact_list_item,
                 null,
                 FROM_COLUMNS, TO_IDS,
                 0);
+        mCursorAdapter.setViewBinder(this);
 
-        mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
-                ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
-                ICON_TEXT_SIZE_DP);
-
-        mCursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                if (view.getId() == android.R.id.text1) {
-                    // While drawing the text, we can draw the image for each contact.
-                    String displayName = cursor.getString(DISPLAY_NAME_INDEX);
-                    String displayChars = "";
-                    if (displayName.length() > 0) {
-                        displayChars += displayName.charAt(0);
-                        String[] parts = displayName.split(" ");
-                        if (parts.length > 1) {
-                            displayChars += parts[parts.length -1].charAt(0);
-                        }
-                    }
-                    LinearLayout layout = (LinearLayout) view.getParent();
-                    Bitmap icon = mIconGenerator.generateIconForText(displayChars, 2);
-                    ImageView image = (ImageView) layout.findViewById(R.id.image);
-                    image.setImageBitmap(icon);
-                    // Fall-through to the return statement below is on purpose (to draw the text).
-                }
-                return false;
-            }
-        });
-
-        // Sets the adapter for the ListView
         mContactsList.setAdapter(mCursorAdapter);
 
-        // Initializes the loader
+        // Initializes the loader.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        if (view.getId() == android.R.id.text1) {
+            // While drawing the text, we can draw the image for each contact.
+            String displayName = cursor.getString(DISPLAY_NAME_INDEX);
+            String displayChars = "";
+            if (displayName.length() > 0) {
+                displayChars += displayName.charAt(0);
+                String[] parts = displayName.split(" ");
+                if (parts.length > 1) {
+                    displayChars += parts[parts.length -1].charAt(0);
+                }
+            }
+
+            LinearLayout layout = (LinearLayout) view.getParent().getParent();
+
+            Bitmap icon = mIconGenerator.generateIconForText(displayChars, 2);
+            ImageView image = (ImageView) layout.findViewById(R.id.image);
+            image.setImageBitmap(icon);
+
+            // Look up all associated emails for this contact. Would be nice to be able to do
+            // this in one go with the original cursor...
+            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Cursor emailCursor = getActivity().getContentResolver().query(
+                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,
+                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
+                    null, null);
+            TextView email = (TextView) layout.findViewById(R.id.email);
+            String emails = "";
+            int count = 0;
+            while (emailCursor.moveToNext()) {
+                if (count++ > 0) {
+                    emails += "\n";
+                }
+                emails += emailCursor.getString(
+                        emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            }
+            email.setText(emails);
+            emailCursor.close();
+
+            // Fall-through to the return statement below is on purpose (to draw the text).
+        }
+        return false;
     }
 
     @Override
