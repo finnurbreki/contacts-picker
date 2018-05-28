@@ -5,22 +5,36 @@
      found in the LICENSE file.
 -->
 
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:orientation="vertical"
     tools:context="com.example.finnur.contactspicker.MainActivity">
 
     <fragment
         android:id="@+id/fragment"
         android:name="com.example.finnur.contactspicker.ContactListFragment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
         tools:layout="@layout/contacts_list_fragment" />
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center">
+        <Button
+            android:id="@+id/select"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Select" />
+        <Button
+            android:id="@+id/cancel"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Cancel" />
+    </LinearLayout>
+</LinearLayout>

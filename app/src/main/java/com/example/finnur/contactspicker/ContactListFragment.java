@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,7 +38,8 @@ import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 public class ContactListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         SimpleCursorAdapter.ViewBinder,
-        AdapterView.OnItemClickListener {
+        AdapterView.OnItemClickListener,
+        View.OnClickListener {
     private static final int ICON_SIZE_DP = 32;
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
@@ -136,7 +138,6 @@ public class ContactListFragment extends ListFragment implements
     private void initialize() {
         mContactsList =
                 (ListView) getActivity().findViewById(android.R.id.list);
-        mContactsList.setOnItemClickListener(this);
 
         mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
                 ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
@@ -154,6 +155,11 @@ public class ContactListFragment extends ListFragment implements
 
         // Initializes the loader.
         getLoaderManager().initLoader(0, null, this);
+
+        Button select = (Button) getActivity().findViewById(R.id.select);
+        select.setOnClickListener(this);
+        Button cancel = (Button) getActivity().findViewById(R.id.cancel);
+        cancel.setOnClickListener(this);
     }
 
     @Override
@@ -221,6 +227,8 @@ public class ContactListFragment extends ListFragment implements
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mCursorAdapter.swapCursor(cursor);
+
+        mContactsList.setOnItemClickListener(this);
     }
 
     @Override
@@ -242,5 +250,15 @@ public class ContactListFragment extends ListFragment implements
         contactKey = cursor.getString(LOOKUP_KEY_INDEX);
         contactUri = ContactsContract.Contacts.getLookupUri(contactId, contactKey);
         // TODO(finnur): Do something with contactUri.
+    }
+
+    @Override
+    public void onClick(View view) {
+        // Button handlers.
+        if (view.getId() == R.id.select) {
+            Toast.makeText(getActivity(), "Implement selection", Toast.LENGTH_SHORT).show();
+        } else if (view.getId() == R.id.cancel) {
+            Toast.makeText(getActivity(), "Implement cancellation", Toast.LENGTH_SHORT).show();
+        }
     }
 }
