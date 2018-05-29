@@ -53,9 +53,7 @@ public class ContactListFragment extends ListFragment implements
      */
     @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                    ContactsContract.Contacts.DISPLAY_NAME
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
     /*
@@ -71,9 +69,7 @@ public class ContactListFragment extends ListFragment implements
     private static final String[] PROJECTION = {
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.LOOKUP_KEY,
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                ContactsContract.Contacts.DISPLAY_NAME
+        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
     // Column ids.
@@ -84,13 +80,15 @@ public class ContactListFragment extends ListFragment implements
     // Defines the text expression
     @SuppressLint("InlinedApi")
     private static final String SELECTION =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?" :
-                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
     // Defines a variable for the search string.
     private String mSearchString = "";
     // Defines the array to hold values that replace the ?.
     private String[] mSelectionArgs = { mSearchString };
+
+    // Sort list by full name, ascending.
+    private static final String SORT_ORDER =
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
 
     // The contacts list view.
     ListView mContactsList;
@@ -221,7 +219,7 @@ public class ContactListFragment extends ListFragment implements
                 PROJECTION,
                 SELECTION,
                 mSelectionArgs,
-                null
+                SORT_ORDER
         );
     }
 
