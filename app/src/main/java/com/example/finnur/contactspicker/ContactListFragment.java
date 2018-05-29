@@ -86,12 +86,18 @@ public class ContactListFragment extends ListFragment implements
     // Defines the array to hold values that replace the ?.
     private String[] mSelectionArgs = { mSearchString };
 
-    // Sort list by full name, ascending.
+    // Defines the sort order (by full name, ascending).
     private static final String SORT_ORDER =
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
 
+    // The resulting JSON response.
+    private String mResults;
+
     // The contacts list view.
     ListView mContactsList;
+
+    // The button to confirm selection.
+    Button mSelectionButton;
 
     // An adapter that binds the result Cursor to the ListView
     private SimpleCursorAdapter mCursorAdapter;
@@ -154,8 +160,8 @@ public class ContactListFragment extends ListFragment implements
         // Initializes the loader.
         getLoaderManager().initLoader(0, null, this);
 
-        Button select = (Button) getActivity().findViewById(R.id.select);
-        select.setOnClickListener(this);
+        mSelectionButton = (Button) getActivity().findViewById(R.id.select);
+        mSelectionButton.setOnClickListener(this);
         Button cancel = (Button) getActivity().findViewById(R.id.cancel);
         cancel.setOnClickListener(this);
     }
@@ -183,10 +189,7 @@ public class ContactListFragment extends ListFragment implements
             // Look up all associated emails for this contact. Would be nice to be able to do
             // this in one go with the original cursor...
             String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-            Cursor emailCursor = getActivity().getContentResolver().query(
-                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,
-                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
-                    null, null);
+            Cursor emailCursor = getEmailCursor(id);
             TextView email = (TextView) layout.findViewById(R.id.email);
             String emails = "";
             int count = 0;
@@ -203,6 +206,14 @@ public class ContactListFragment extends ListFragment implements
             // Fall-through to the return statement below is on purpose (to draw the text).
         }
         return false;
+    }
+
+    private Cursor getEmailCursor(String id) {
+        Cursor emailCursor = getActivity().getContentResolver().query(
+                ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
+                null, null);
+        return emailCursor;
     }
 
     @Override
@@ -237,26 +248,48 @@ public class ContactListFragment extends ListFragment implements
     @Override
     public void onItemClick(
             AdapterView<?> parent, View item, int position, long rowID) {
-        // Define variables for the contact the user selects
-        long contactId;
-        String contactKey;
-        Uri contactUri;
-
         Cursor cursor = mCursorAdapter.getCursor();
         cursor.moveToPosition(position);
-        contactId = cursor.getLong(CONTACT_ID_INDEX);
-        contactKey = cursor.getString(LOOKUP_KEY_INDEX);
-        contactUri = ContactsContract.Contacts.getLookupUri(contactId, contactKey);
-        // TODO(finnur): Do something with contactUri.
+        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+
+        mResults = constructResultString(id, cursor);
+        mSelectionButton.setEnabled(true);
     }
 
     @Override
     public void onClick(View view) {
         // Button handlers.
         if (view.getId() == R.id.select) {
-            Toast.makeText(getActivity(), "Implement selection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), mResults, Toast.LENGTH_LONG).show();
         } else if (view.getId() == R.id.cancel) {
             Toast.makeText(getActivity(), "Implement cancellation", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String constructResultString(String id, Cursor cursor) {
+        StringBuilder results = new StringBuilder();
+        results.append("[{");
+
+        String contactName = cursor.getString(DISPLAY_NAME_INDEX);
+        results.append(" \"name\": \"");
+        results.append(contactName.trim());
+        results.append("\", \"emails\": [");
+
+        Cursor emailCursor = getEmailCursor(id);
+        int count = 0;
+        while (emailCursor.moveToNext()) {
+            if (count++ > 0) {
+                results.append(", ");
+            }
+            results.append("\"");
+            results.append(emailCursor.getString(
+                    emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)).trim());
+            results.append("\"");
+        }
+        emailCursor.close();
+
+        results.append("]}]");
+
+        return results.toString();
     }
 }
