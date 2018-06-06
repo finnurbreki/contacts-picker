@@ -1,9 +1,20 @@
-<!--
-     Copyright 2018 The Chromium Authors. All rights reserved.
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-
 <resources>
+    <string name="accessibility_cancel_selection">Cancel selection</string>
+    <string name="accessibility_drawer_toggle_btn_close">Close navigation drawer</string>
+    <string name="accessibility_drawer_toggle_btn_open">Open navigation drawer</string>
+    <string name="accessibility_toolbar_btn_back">Go back</string>
+    <string name="accessibility_toolbar_btn_delete_url">Clear input</string>
+    <string name="accessibility_toolbar_multi_select">x?x selected</string>
+    <string name="accessibility_toolbar_screen_position">Options available near top of the screen</string>
+    <string name="action_settings">Settings</string>
     <string name="app_name">Contact Picker</string>
+    <string name="close">Close</string>
+    <string name="contact_picker_select_contacts">Select contacts</string>
+    <string name="done">Done</string>
+    <string name="hide_info">Hide Info</string>
+    <string name="show_info">Show Info</string>
 </resources>

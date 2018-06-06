@@ -1,18 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright 2018 The Chromium Authors. All rights reserved.
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-
 <resources>
-    <dimen name="standard_margin">8dp</dimen>
-    <dimen name="small_padding">4dp</dimen>
-    <dimen name="heading_top_margin">24dp</dimen>
-    <dimen name="padding_wide">16dp</dimen>
-    <dimen name="body_width">220dp</dimen>
-    <dimen name="padding_standard">8dp</dimen>
-    <dimen name="image_left_margin">32dp</dimen>
-    <dimen name="body_top_margin">96dp</dimen>
-    <dimen name="margin_wide">16dp</dimen>
+    <dimen name="action_bar_shadow_height">10dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="clear_text_button_end_padding">8dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="headline_size_medium">20sp</dimen>
+    <dimen name="list_item_start_icon_right_margin">20dp</dimen>
+    <dimen name="list_item_start_icon_width">36dp</dimen>
+    <dimen name="modern_toolbar_background_size">36dp</dimen>
+    <dimen name="modern_toolbar_background_corner_radius">18dp</dimen>
+    <dimen name="modern_toolbar_background_lateral_inset">2dp</dimen>
+    <dimen name="search_toolbar_modern_bg_lateral_inset">8dp</dimen>
+    <dimen name="search_toolbar_modern_bg_top_bottom_inset">10dp</dimen>
+    <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
+    <dimen name="selectable_list_search_icon_end_padding">4dp</dimen>
+    <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
+    <dimen name="tab_strip_height">0dp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_medium_dense">13sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="toolbar_height_no_shadow">56dp</dimen>
+    <dimen name="toolbar_modern_search_view_start_offset">4dp</dimen>
+    <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
+    <color name="white_mode_tint">#FFFFFF</color>
 </resources>

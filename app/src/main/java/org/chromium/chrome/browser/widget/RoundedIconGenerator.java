@@ -55,7 +55,7 @@ public class RoundedIconGenerator {
      * @param textSizeDp Size at which the text should be drawn in dp.
      */
     public RoundedIconGenerator(Resources res, int iconWidthDp, int iconHeightDp,
-            int cornerRadiusDp, int backgroundColor, int textSizeDp) {
+                                int cornerRadiusDp, int backgroundColor, int textSizeDp) {
         this((int) (res.getDisplayMetrics().density * iconWidthDp),
                 (int) (res.getDisplayMetrics().density * iconHeightDp),
                 (int) (res.getDisplayMetrics().density * cornerRadiusDp), backgroundColor,
@@ -72,7 +72,7 @@ public class RoundedIconGenerator {
      * @param textSizePx Size at which the text should be drawn in pixels.
      */
     public RoundedIconGenerator(int iconWidthPx, int iconHeightPx, int cornerRadiusPx,
-            int backgroundColor, float textSizePx) {
+                                int backgroundColor, float textSizePx) {
         mIconWidthPx = iconWidthPx;
         mIconHeightPx = iconHeightPx;
         mCornerRadiusPx = cornerRadiusPx;
