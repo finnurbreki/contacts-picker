@@ -59,6 +59,11 @@ public class SelectionDelegate<E> {
         return isItemSelected(item);
     }
 
+    public void toggleSelectionForItems(Set<E> items) {
+        mSelectedItems = items;
+        notifyObservers();
+    }
+
     /**
      * True if the item is selected. False otherwise.
      * @param item The item.

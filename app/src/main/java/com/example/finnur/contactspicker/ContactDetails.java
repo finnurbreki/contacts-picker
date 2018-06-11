@@ -4,12 +4,18 @@
 
 package com.example.finnur.contactspicker;
 
+import android.support.annotation.Nullable;
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * A class to keep track of the metadata associated with a contact.
  */
 public class ContactDetails implements Comparable<ContactDetails> {
+    // The unique id for the contact.
+    private String mId;
+
     // The display name for this contact.
     private String mDisplayName;
 
@@ -17,13 +23,15 @@ public class ContactDetails implements Comparable<ContactDetails> {
     private List<String> mEmails;
 
     /**
-     * The PickerBitmap constructor.
+     * The ContactDetails constructor.
+     * @param id The unique identifier of this contact.
      * @param displayName The display name of this contact.
      * @param emails The emails registered for this contact.
      */
-    public ContactDetails(String displayName, List<String> emails) {
+    public ContactDetails(String id, String displayName, List<String> emails) {
         mDisplayName = displayName;
         mEmails = emails;
+        mId = id;
     }
 
     /**
@@ -69,12 +77,31 @@ public class ContactDetails implements Comparable<ContactDetails> {
     }
 
     /**
-     * A comparison function for PickerBitmaps (results in a last-modified first sort).
-     * @param other The PickerBitmap to compare it to.
+     * A comparison function (results in a full name ascending sorting).
+     * @param other The other ContactDetails object to compare it with.
      * @return 0, 1, or -1, depending on which is bigger.
      */
     @Override
     public int compareTo(ContactDetails other) {
         return other.mDisplayName.compareTo(mDisplayName);
+    }
+
+    @Override
+    public int hashCode() {
+        Object[] values = {mId, mDisplayName, mEmails};
+        return Arrays.hashCode(values);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (object == null)
+            return false;
+        if (object == this)
+            return true;
+        if (!(object instanceof ContactDetails))
+            return false;
+
+        ContactDetails otherInfo = (ContactDetails) object;
+        return mId.equals(otherInfo.mId);
     }
 }

@@ -7,8 +7,7 @@ package com.example.finnur.contactspicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
-import android.graphics.Rect;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,13 +25,15 @@ import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView extends RelativeLayout implements View.OnClickListener {
+public class PickerCategoryView extends RelativeLayout implements View.OnClickListener, SelectionDelegate.SelectionObserver<ContactDetails> {
     // Constants for the RoundedIconGenerator.
     private static final int ICON_SIZE_DP = 32;
     private static final int ICON_CORNER_RADIUS_DP = 20;
@@ -66,6 +67,16 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     // The {@link SelectionDelegate} keeping track of which contacts are selected.
     private SelectionDelegate<ContactDetails> mSelectionDelegate;
 
+    // The action button in the bottom right corner.
+    private FloatingActionButton mActionButton;
+
+    // The action button has two modes, Select All and Undo. This keeps track of which mode is
+    // active.
+    private boolean mSelectAllMode = true;
+
+    // The state to restore to if Undo is used.
+    List<ContactDetails> mPreviousSelection = null;
+
     // The MIME types requested.
     private List<String> mMimeTypes;
 
@@ -75,6 +86,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mActivity = /*(ChromeActivity)*/ (Activity) context;
 
         mSelectionDelegate = new SelectionDelegate<ContactDetails>();
+        mSelectionDelegate.addObserver(this);
 
         mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
                 ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
@@ -97,6 +109,9 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mActionButton = (FloatingActionButton) root.findViewById(R.id.action);
+        mActionButton.setOnClickListener(this);
     }
 
     /**
@@ -122,12 +137,36 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mPickerAdapter.notifyDataSetChanged();
     }
 
+    // SelectionDelegate.SelectionObserver:
+
+    public void onSelectionStateChange(List<ContactDetails> selectedItems) {
+        // If all items have been selected, only show the Undo button if there's a meaningful
+        // state to revert to (one might not exist if they were all selected manually).
+        // TODO(finnur): Add automatic test that exercises the visibility of the action button,
+        //               including when all items are selected manually (special case).
+        mActionButton.setVisibility(selectedItems.size() != mPickerAdapter.getItemCount() ||
+                mPreviousSelection != null ? VISIBLE : GONE);
+    }
+
     // OnClickListener:
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.done) {
             notifyContactsSelected();
+        } else if (view.getId() == R.id.action) {
+            if (mSelectAllMode) {
+                mPreviousSelection = mSelectionDelegate.getSelectedItems();
+                mSelectionDelegate.toggleSelectionForItems(mPickerAdapter.getAllContacts());
+                mActionButton.setImageResource(R.drawable.ic_undo);
+            } else {
+                Set<ContactDetails> previousSelection =
+                        new HashSet<ContactDetails>(mPreviousSelection);
+                mSelectionDelegate.toggleSelectionForItems(previousSelection);
+                mActionButton.setImageResource(R.drawable.ic_select_all);
+                mPreviousSelection = null;
+            }
+            mSelectAllMode = !mSelectAllMode;
         } else {
             executeAction(ContactsPickerListener.Action.CANCEL, null);
         }

@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A data adapter for the Contacts Picker.
@@ -45,6 +48,20 @@ public class PickerAdapter extends Adapter<ViewHolder> {
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC");
     }
 
+    public Set<ContactDetails> getAllContacts() {
+        Set<ContactDetails> contacts = new HashSet<>();
+        if (!mContactsCursor.moveToFirst()) return contacts;
+        do {
+            String id = mContactsCursor.getString(
+                    mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
+            String name = mContactsCursor.getString(mContactsCursor.getColumnIndex(
+                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+            contacts.add(new ContactDetails(id, name, getEmails()));
+        } while (mContactsCursor.moveToNext());
+
+        return contacts;
+    }
+
     // RecyclerView.Adapter:
 
     @Override
@@ -61,25 +78,16 @@ public class PickerAdapter extends Adapter<ViewHolder> {
         if (holder instanceof ContactViewHolder) {
             ContactViewHolder myHolder = (ContactViewHolder) holder;
 
+            String id = "";
             String name = "";
             if (mContactsCursor.moveToPosition(position)) {
+                id = mContactsCursor.getString(
+                        mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
                 name = mContactsCursor.getString(mContactsCursor.getColumnIndex(
                         ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
             }
 
-            // Look up all associated emails for this contact. Would be nice to be able to do
-            // this in one go with the original cursor...
-            String id = mContactsCursor.getString(
-                    mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
-            Cursor emailCursor = getEmailCursor(id);
-            ArrayList<String> emails = new ArrayList<String>();
-            while (emailCursor.moveToNext()) {
-                emails.add(emailCursor.getString(
-                        emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)));
-            }
-            emailCursor.close();
-
-            ContactDetails contactDetails = new ContactDetails(name, emails);
+            ContactDetails contactDetails = new ContactDetails(id, name, getEmails());
             myHolder.displayItem(contactDetails);
         }
     }
@@ -90,6 +98,21 @@ public class PickerAdapter extends Adapter<ViewHolder> {
                 ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
                 null, ContactsContract.CommonDataKinds.Email.DATA + " ASC");
         return emailCursor;
+    }
+
+    private ArrayList<String> getEmails() {
+        // Look up all associated emails for this contact. Would be nice to be able to do
+        // this in one go with the original cursor...
+        String id = mContactsCursor.getString(
+                mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
+        Cursor emailCursor = getEmailCursor(id);
+        ArrayList<String> emails = new ArrayList<String>();
+        while (emailCursor.moveToNext()) {
+            emails.add(emailCursor.getString(
+                    emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA)));
+        }
+        emailCursor.close();
+        return emails;
     }
 
     @Override

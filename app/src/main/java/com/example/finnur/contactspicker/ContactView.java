@@ -93,6 +93,14 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         // been cleared. However, we don't need to process that message.
         if (mContactDetails == null) return;
 
+        // When SelectAll or Undo is used, the underlying UI must be updated
+        // to reflect the changes.
+        boolean selected = selectedItems.contains(mContactDetails);
+        boolean checked = super.isChecked();
+        if (selected != checked) {
+            super.toggle();
+        }
+
         updateSelectionState();
     }
 
