@@ -27,8 +27,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        setNavigationIcon(R.drawable.btn_close);
-        setNavigationContentDescription(R.string.close);
+        showCloseButton();
 
         TextView up = (TextView) mNumberRollView.findViewById(R.id.up);
         TextView down = (TextView) mNumberRollView.findViewById(R.id.down);
@@ -36,8 +35,13 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         down.setTextColor(Color.BLACK);
     }
 
-    @Override
-    protected void setNavigationButton(int navigationButton) {}
+    /**
+     * Shows the Close or 'X' navigation button in the upper left corner.
+     */
+    public void showCloseButton() {
+        setNavigationIcon(R.drawable.btn_close);
+        setNavigationContentDescription(R.string.close);
+    }
 
     @Override
     protected void showSelectionView(

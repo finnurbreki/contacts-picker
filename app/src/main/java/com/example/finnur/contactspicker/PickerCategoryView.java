@@ -10,15 +10,18 @@ import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 // import org.chromium.chrome.R;
 // import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
+import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
@@ -33,7 +36,9 @@ import java.util.Set;
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView extends RelativeLayout implements View.OnClickListener, SelectionDelegate.SelectionObserver<ContactDetails> {
+public class PickerCategoryView extends RelativeLayout implements View.OnClickListener,
+        SelectionDelegate.SelectionObserver<ContactDetails>,
+        SelectableListToolbar.SearchDelegate {
     // Constants for the RoundedIconGenerator.
     private static final int ICON_SIZE_DP = 32;
     private static final int ICON_CORNER_RADIUS_DP = 20;
@@ -52,6 +57,9 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     // The callback to notify the listener of decisions reached in the picker.
     private ContactsPickerListener mListener;
 
+    // The toolbar located at the top of the dialog.
+    private ContactsPickerToolbar mToolbar;
+
     // The RecyclerView showing the images.
     private RecyclerView mRecyclerView;
 
@@ -66,6 +74,12 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
     // The {@link SelectionDelegate} keeping track of which contacts are selected.
     private SelectionDelegate<ContactDetails> mSelectionDelegate;
+
+    // The search icon.
+    private ImageView mSearchButton;
+
+    // The Done text button that confirms the selection choice.
+    private Button mDoneButton;
 
     // The action button in the bottom right corner.
     private FloatingActionButton mActionButton;
@@ -98,13 +112,18 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
         mPickerAdapter = new PickerAdapter(this);
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(mPickerAdapter);
-        ContactsPickerToolbar toolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
+        mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.contacts_picker_toolbar, mSelectionDelegate,
-                R.string.contact_picker_select_contacts, null, 0, 0, R.color.default_primary_color,
+                R.string.contacts_picker_select_contacts, null, 0,
+                0, R.color.default_primary_color,
                 null, false);
-        toolbar.setNavigationOnClickListener(this);
-        Button doneButton = (Button) toolbar.findViewById(R.id.done);
-        doneButton.setOnClickListener(this);
+        mToolbar.setNavigationOnClickListener(this);
+        mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
+
+        mSearchButton = (ImageView) mToolbar.findViewById(R.id.search);
+        mSearchButton.setOnClickListener(this);
+        mDoneButton = (Button) mToolbar.findViewById(R.id.done);
+        mDoneButton.setOnClickListener(this);
 
         mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setHasFixedSize(true);
@@ -122,7 +141,6 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
      */
     public void initialize(ContactsPickerDialog dialog, ContactsPickerListener listener,
                            List<String> mimeTypes) {
-
         mDialog = dialog;
         mListener = listener;
         mMimeTypes = new ArrayList<>(mimeTypes);
@@ -135,6 +153,26 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         });
 
         mPickerAdapter.notifyDataSetChanged();
+    }
+
+    private void onStartSearch() {
+        mDoneButton.setVisibility(GONE);
+        mToolbar.showSearchView();
+    }
+
+    // SelectableListToolbar.SearchDelegate:
+
+    @Override
+    public void onEndSearch() {
+        mPickerAdapter.setSearchString("");
+        mToolbar.hideSearchView();
+        mToolbar.showCloseButton();
+        mDoneButton.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void onSearchTextChanged(String query) {
+        mPickerAdapter.setSearchString(query);
     }
 
     // SelectionDelegate.SelectionObserver:
@@ -152,23 +190,31 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.done) {
-            notifyContactsSelected();
-        } else if (view.getId() == R.id.action) {
-            if (mSelectAllMode) {
-                mPreviousSelection = mSelectionDelegate.getSelectedItems();
-                mSelectionDelegate.toggleSelectionForItems(mPickerAdapter.getAllContacts());
-                mActionButton.setImageResource(R.drawable.ic_undo);
-            } else {
-                Set<ContactDetails> previousSelection =
-                        new HashSet<ContactDetails>(mPreviousSelection);
-                mSelectionDelegate.toggleSelectionForItems(previousSelection);
-                mActionButton.setImageResource(R.drawable.ic_select_all);
-                mPreviousSelection = null;
-            }
-            mSelectAllMode = !mSelectAllMode;
-        } else {
-            executeAction(ContactsPickerListener.Action.CANCEL, null);
+        int id = view.getId();
+        switch (id) {
+            case R.id.done:
+                notifyContactsSelected();
+                break;
+            case R.id.search:
+                onStartSearch();
+                break;
+            case R.id.action:
+                if (mSelectAllMode) {
+                    mPreviousSelection = mSelectionDelegate.getSelectedItems();
+                    mSelectionDelegate.toggleSelectionForItems(mPickerAdapter.getAllContacts());
+                    mActionButton.setImageResource(R.drawable.ic_undo);
+                } else {
+                    Set<ContactDetails> previousSelection =
+                            new HashSet<ContactDetails>(mPreviousSelection);
+                    mSelectionDelegate.toggleSelectionForItems(previousSelection);
+                    mActionButton.setImageResource(R.drawable.ic_select_all);
+                    mPreviousSelection = null;
+                }
+                mSelectAllMode = !mSelectAllMode;
+                break;
+            default:
+                executeAction(ContactsPickerListener.Action.CANCEL, null);
+                break;
         }
     }
 

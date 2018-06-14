@@ -13,8 +13,10 @@
     <string name="action_settings">Settings</string>
     <string name="app_name">Contact Picker</string>
     <string name="close">Close</string>
-    <string name="contact_picker_select_contacts">Select contacts</string>
+    <string name="contacts_picker_search">Search your contacts</string>
+    <string name="contacts_picker_select_contacts">Select contacts</string>
     <string name="done">Done</string>
     <string name="hide_info">Hide Info</string>
+    <string name="search">Search</string>
     <string name="show_info">Show Info</string>
 </resources>
