@@ -7,6 +7,7 @@ package com.example.finnur.contactspicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -157,6 +158,12 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
     private void onStartSearch() {
         mDoneButton.setVisibility(GONE);
+
+        // Showing the search clears current selection. Save it, so we can restore it after the
+        // search has completed.
+        mPreviousSelection = mSelectionDelegate.getSelectedItems();
+        mDoneButton.setEnabled(false);
+        mSearchButton.setVisibility(GONE);
         mToolbar.showSearchView();
     }
 
@@ -165,9 +172,36 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     @Override
     public void onEndSearch() {
         mPickerAdapter.setSearchString("");
-        mToolbar.hideSearchView();
         mToolbar.showCloseButton();
+        mToolbar.setNavigationOnClickListener(this);
+        mDoneButton.setEnabled(true);
         mDoneButton.setVisibility(VISIBLE);
+        mSearchButton.setVisibility(VISIBLE);
+
+        // Hiding the search view clears the selection. Save it first and restore to the old
+        // selection, with the new item added during search.
+        HashSet<ContactDetails> selection = new HashSet<>();
+        for (ContactDetails item : mSelectionDelegate.getSelectedItems()) {
+            selection.add(item);
+        }
+        mToolbar.hideSearchView();
+        for (ContactDetails item : mPreviousSelection) {
+            selection.add(item);
+        }
+
+        // Asynchronously toggle the selection, to let the current action run its course (the number
+        // roll view will otherwise show the wrong number).
+        new AsyncTask<HashSet<ContactDetails>, Void, HashSet<ContactDetails>>() {
+            @Override
+            protected HashSet<ContactDetails> doInBackground(HashSet<ContactDetails>... params) {
+              return params[0];
+            }
+
+            @Override
+            protected void onPostExecute(HashSet<ContactDetails> result) {
+                mSelectionDelegate.toggleSelectionForItems(result);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selection);
     }
 
     @Override
@@ -178,11 +212,18 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     // SelectionDelegate.SelectionObserver:
 
     public void onSelectionStateChange(List<ContactDetails> selectedItems) {
+        // Once a selection is made, drop out of search mode. Note: This function is also called when
+        // entering search mode (with selectedItems then being 0 in size).
+        if (mToolbar.isSearching() && selectedItems.size() > 0) {
+            mToolbar.hideSearchView();
+        }
+
         // If all items have been selected, only show the Undo button if there's a meaningful
         // state to revert to (one might not exist if they were all selected manually).
         // TODO(finnur): Add automatic test that exercises the visibility of the action button,
         //               including when all items are selected manually (special case).
-        mActionButton.setVisibility(selectedItems.size() != mPickerAdapter.getItemCount() ||
+        mActionButton.setVisibility(!mToolbar.isSearching() &&
+                selectedItems.size() != mPickerAdapter.getItemCount() ||
                 mPreviousSelection != null ? VISIBLE : GONE);
     }
 

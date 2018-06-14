@@ -55,6 +55,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     public void setSearchString(String query) {
         String searchString = "%" + query + "%";
         String[] selectionArgs = { searchString };
+        mContactsCursor.close();
         mContactsCursor = mCategoryView.getActivity().getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?", selectionArgs,
