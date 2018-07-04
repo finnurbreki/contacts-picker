@@ -117,7 +117,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
                 R.layout.contacts_picker_toolbar, mSelectionDelegate,
                 R.string.contacts_picker_select_contacts, null, 0,
                 0, R.color.default_primary_color,
-                null, false);
+                null, false, false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
 

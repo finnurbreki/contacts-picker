@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
@@ -47,6 +49,18 @@ public class TintedImageView extends AppCompatImageView implements ImageViewTint
     }
 
     @Override
+    public void setImageDrawable(@Nullable Drawable drawable) {
+        super.setImageDrawable(drawable);
+        maybeUpdateTint();
+    }
+
+    @Override
+    public void setImageResource(int resId) {
+        super.setImageResource(resId);
+        maybeUpdateTint();
+    }
+
+    @Override
     public void setTint(ColorStateList tintList) {
         mTinter.setTint(tintList);
     }
@@ -54,5 +68,13 @@ public class TintedImageView extends AppCompatImageView implements ImageViewTint
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+    }
+
+    private void maybeUpdateTint() {
+        if (mTinter == null) {
+            // Got indirectly invoked from the superclass constructor, nothing to do yet.
+            return;
+        }
+        mTinter.drawableStateChanged();
     }
 }

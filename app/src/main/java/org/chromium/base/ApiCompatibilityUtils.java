@@ -13,7 +13,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
@@ -32,10 +31,10 @@ import android.os.StatFs;
 import android.os.StrictMode;
 //import android.os.UserManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodSubtype;
@@ -67,6 +66,29 @@ public class ApiCompatibilityUtils {
      */
     public static int compareBoolean(boolean lhs, boolean rhs) {
         return lhs == rhs ? 0 : lhs ? 1 : -1;
+    }
+
+    /**
+     * Checks that the object reference is not null and throws NullPointerException if it is.
+     * See {@link Objects#requireNonNull} which is available since API level 19.
+     * @param obj The object to check
+     */
+    @NonNull
+    public static <T> T requireNonNull(T obj) {
+        if (obj == null) throw new NullPointerException();
+        return obj;
+    }
+
+    /**
+     * Checks that the object reference is not null and throws NullPointerException if it is.
+     * See {@link Objects#requireNonNull} which is available since API level 19.
+     * @param obj The object to check
+     * @param message The message to put into NullPointerException
+     */
+    @NonNull
+    public static <T> T requireNonNull(T obj, String message) {
+        if (obj == null) throw new NullPointerException(message);
+        return obj;
     }
 
     /**
@@ -167,82 +189,13 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * @see android.view.ViewGroup.MarginLayoutParams#setMarginEnd(int)
+     * @see android.widget.TextView#getCompoundDrawablesRelative()
      */
-    public static void setMarginEnd(MarginLayoutParams layoutParams, int end) {
+    public static Drawable[] getCompoundDrawablesRelative(TextView textView) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            layoutParams.setMarginEnd(end);
+            return textView.getCompoundDrawablesRelative();
         } else {
-            layoutParams.rightMargin = end;
-        }
-    }
-
-    /**
-     * @see android.view.ViewGroup.MarginLayoutParams#getMarginEnd()
-     */
-    public static int getMarginEnd(MarginLayoutParams layoutParams) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return layoutParams.getMarginEnd();
-        } else {
-            return layoutParams.rightMargin;
-        }
-    }
-
-    /**
-     * @see android.view.ViewGroup.MarginLayoutParams#setMarginStart(int)
-     */
-    public static void setMarginStart(MarginLayoutParams layoutParams, int start) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            layoutParams.setMarginStart(start);
-        } else {
-            layoutParams.leftMargin = start;
-        }
-    }
-
-    /**
-     * @see android.view.ViewGroup.MarginLayoutParams#getMarginStart()
-     */
-    public static int getMarginStart(MarginLayoutParams layoutParams) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return layoutParams.getMarginStart();
-        } else {
-            return layoutParams.leftMargin;
-        }
-    }
-
-    /**
-     * @see android.view.View#setPaddingRelative(int, int, int, int)
-     */
-    public static void setPaddingRelative(View view, int start, int top, int end, int bottom) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            view.setPaddingRelative(start, top, end, bottom);
-        } else {
-            // Before JB MR1, all layouts are left-to-right, so start == left, etc.
-            view.setPadding(start, top, end, bottom);
-        }
-    }
-
-    /**
-     * @see android.view.View#getPaddingStart()
-     */
-    public static int getPaddingStart(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return view.getPaddingStart();
-        } else {
-            // Before JB MR1, all layouts are left-to-right, so start == left.
-            return view.getPaddingLeft();
-        }
-    }
-
-    /**
-     * @see android.view.View#getPaddingEnd()
-     */
-    public static int getPaddingEnd(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return view.getPaddingEnd();
-        } else {
-            // Before JB MR1, all layouts are left-to-right, so end == right.
-            return view.getPaddingRight();
+            return textView.getCompoundDrawables();
         }
     }
 
@@ -461,6 +414,25 @@ public class ApiCompatibilityUtils {
     }
 
     /**
+     * Sets the status bar icons to dark or light. Note that this is only valid for
+     * Android M+.
+     *
+     * @param rootView The root view used to request updates to the system UI theming.
+     * @param useDarkIcons Whether the status bar icons should be dark.
+     */
+    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
+        int systemUiVisibility = rootView.getSystemUiVisibility();
+        if (useDarkIcons) {
+            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
      * @see android.content.res.Resources#getDrawable(int id).
      * TODO(ltian): use {@link AppCompatResources} to parse drawable to prevent fail on
      * {@link VectorDrawable}. (http://crbug.com/792129)
@@ -549,18 +521,6 @@ public class ApiCompatibilityUtils {
             return drawable.getColorFilter();
         } else {
             return null;
-        }
-    }
-
-    /**
-     * @see android.content.res.Resources#getColorStateList(int id).
-     */
-    @SuppressWarnings("deprecation")
-    public static ColorStateList getColorStateList(Resources res, int id) throws NotFoundException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return res.getColorStateList(id, null);
-        } else {
-            return res.getColorStateList(id);
         }
     }
 
@@ -724,7 +684,7 @@ public class ApiCompatibilityUtils {
      * @param displayId The id of the display to launch into.
      * @return The created bundle, or null if unsupported.
      */
-    /* Not needed for Android Studio project.
+    /* Not needed for Android Studio project, commented out to avoid pulling in dependencies.
     public static Bundle createLaunchDisplayIdActivityOptions(int displayId) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return null;
 

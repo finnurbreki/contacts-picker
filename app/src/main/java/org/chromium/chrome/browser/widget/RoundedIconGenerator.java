@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.RectF;
-import android.support.annotation.Nullable; // Used instead of javax.annot
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,7 +22,7 @@ import org.chromium.base.VisibleForTesting;
 import java.net.URI;
 import java.util.Locale;
 
-//import javax.annotation.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Generator for transparent icons containing a rounded rectangle with a given background color,
@@ -55,7 +54,7 @@ public class RoundedIconGenerator {
      * @param textSizeDp Size at which the text should be drawn in dp.
      */
     public RoundedIconGenerator(Resources res, int iconWidthDp, int iconHeightDp,
-                                int cornerRadiusDp, int backgroundColor, int textSizeDp) {
+            int cornerRadiusDp, int backgroundColor, int textSizeDp) {
         this((int) (res.getDisplayMetrics().density * iconWidthDp),
                 (int) (res.getDisplayMetrics().density * iconHeightDp),
                 (int) (res.getDisplayMetrics().density * cornerRadiusDp), backgroundColor,
@@ -72,7 +71,7 @@ public class RoundedIconGenerator {
      * @param textSizePx Size at which the text should be drawn in pixels.
      */
     public RoundedIconGenerator(int iconWidthPx, int iconHeightPx, int cornerRadiusPx,
-                                int backgroundColor, float textSizePx) {
+            int backgroundColor, float textSizePx) {
         mIconWidthPx = iconWidthPx;
         mIconHeightPx = iconHeightPx;
         mCornerRadiusPx = cornerRadiusPx;

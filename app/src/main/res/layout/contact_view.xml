@@ -55,14 +55,6 @@
             android:paddingEnd="5sp">
 
             <ImageView
-                android:id="@+id/scrim"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="@drawable/file_picker_scrim"
-                android:contentDescription="@null"
-                android:visibility="gone" />
-
-            <ImageView
                 android:id="@+id/selected"
                 android:layout_width="26dp"
                 android:layout_height="26dp"

@@ -6,13 +6,17 @@ package org.chromium.chrome.browser.widget.selection;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.StringRes;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -23,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -30,10 +35,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import com.example.finnur.contactspicker.R;
 import org.chromium.base.VisibleForTesting;
+import com.example.finnur.contactspicker.R;
 import org.chromium.chrome.browser.toolbar.ActionModeController;
 import org.chromium.chrome.browser.toolbar.ToolbarActionModeCallback;
+import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.util.FeatureUtilities;
 //import org.chromium.chrome.browser.vr_shell.VrShellDelegate;
 import org.chromium.chrome.browser.widget.NumberRollView;
@@ -96,12 +102,14 @@ public class SelectableListToolbar<E>
     private SearchDelegate mSearchDelegate;
     private boolean mSelectableListHasItems;
     private boolean mIsVrEnabled = false;
+    private boolean mUpdateStatusBarColor;
 
     protected NumberRollView mNumberRollView;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private TintedDrawable mNormalMenuButton;
     private TintedDrawable mSelectionMenuButton;
+    private TintedDrawable mNavigationIconDrawable;
 
     private int mNavigationButton;
     private int mTitleResId;
@@ -113,10 +121,11 @@ public class SelectableListToolbar<E>
     private int mNormalBackgroundColor;
     private int mSelectionBackgroundColor;
     private int mSearchBackgroundColor;
+    private ColorStateList mDarkIconColorList;
+    private ColorStateList mLightIconColorList;
 
     private UiConfig mUiConfig;
     private int mWideDisplayStartOffsetPx;
-    private int mModernSearchViewStartOffsetPx;
     private int mModernNavButtonStartOffsetPx;
     private int mModernToolbarActionMenuEndOffsetPx;
     private int mModernToolbarSearchIconOffsetPx;
@@ -140,7 +149,8 @@ public class SelectableListToolbar<E>
     /**
      * Destroys and cleans up itself.
      */
-    void destroy() {
+    @CallSuper
+    public void destroy() {
         mIsDestroyed = true;
         if (mSelectionDelegate != null) mSelectionDelegate.removeObserver(this);
         UiUtils.hideKeyboard(mSearchEditText);
@@ -162,20 +172,24 @@ public class SelectableListToolbar<E>
      * @param normalBackgroundColorResId The resource id of the color to use as the background color
      *                                   when selection is not enabled. If null the default appbar
      *                                   background color will be used.
+     * @param updateStatusBarColor Whether the status bar color should be updated to match the
+     *                             toolbar color. If true, the status bar will only be updated if
+     *                             the current device fully supports theming and is on Android M+.
      */
     public void initialize(SelectionDelegate<E> delegate, int titleResId,
             @Nullable DrawerLayout drawerLayout, int normalGroupResId, int selectedGroupResId,
-            @Nullable Integer normalBackgroundColorResId) {
+            @Nullable Integer normalBackgroundColorResId, boolean updateStatusBarColor) {
         mTitleResId = titleResId;
         mDrawerLayout = drawerLayout;
         mNormalGroupResId = normalGroupResId;
         mSelectedGroupResId = selectedGroupResId;
+        mUpdateStatusBarColor = updateStatusBarColor
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !UiUtils.isSystemUiThemingDisabled();
 
         mSelectionDelegate = delegate;
         mSelectionDelegate.addObserver(this);
 
-        mModernSearchViewStartOffsetPx = getResources().getDimensionPixelSize(
-                R.dimen.toolbar_modern_search_view_start_offset);
         mModernNavButtonStartOffsetPx = getResources().getDimensionPixelSize(
                 R.dimen.selectable_list_toolbar_nav_button_start_offset);
         mModernToolbarActionMenuEndOffsetPx = getResources().getDimensionPixelSize(
@@ -187,8 +201,8 @@ public class SelectableListToolbar<E>
 
         normalBackgroundColorResId = normalBackgroundColorResId != null
                 ? normalBackgroundColorResId
-                : FeatureUtilities.isChromeModernDesignEnabled() ? R.color.modern_primary_color
-                                                                 : R.color.default_primary_color;
+                : ColorUtils.getDefaultThemeColor(
+                          getResources(), FeatureUtilities.isChromeModernDesignEnabled(), false);
         mNormalBackgroundColor =
                 ApiCompatibilityUtils.getColor(getResources(), normalBackgroundColorResId);
         setBackgroundColor(mNormalBackgroundColor);
@@ -196,14 +210,21 @@ public class SelectableListToolbar<E>
         mSelectionBackgroundColor = ApiCompatibilityUtils.getColor(
                 getResources(), R.color.light_active_color);
 
+        mDarkIconColorList =
+                AppCompatResources.getColorStateList(getContext(), R.color.dark_mode_tint);
+        mLightIconColorList =
+                AppCompatResources.getColorStateList(getContext(), R.color.white_mode_tint);
+
         if (mTitleResId != 0) setTitle(mTitleResId);
 
         // TODO(twellington): add the concept of normal & selected tint to apply to all toolbar
         //                    buttons.
         mNormalMenuButton = TintedDrawable.constructTintedDrawable(
-                getResources(), R.drawable.ic_more_vert_black_24dp);
+                getContext(), R.drawable.ic_more_vert_black_24dp);
         mSelectionMenuButton = TintedDrawable.constructTintedDrawable(
-                getResources(), R.drawable.ic_more_vert_black_24dp, android.R.color.white);
+                getContext(), R.drawable.ic_more_vert_black_24dp, R.color.white_mode_tint);
+        mNavigationIconDrawable = TintedDrawable.constructTintedDrawable(
+                getContext(), R.drawable.ic_arrow_back_white_24dp);
 
         if (!FeatureUtilities.isChromeModernDesignEnabled()) {
             setTitleTextAppearance(getContext(), R.style.BlackHeadline2);
@@ -222,7 +243,7 @@ public class SelectableListToolbar<E>
         MenuItem extraMenuItem = getMenu().findItem(mExtraMenuItemId);
         if (extraMenuItem != null) {
             Drawable iconDrawable = TintedDrawable.constructTintedDrawable(
-                    getResources(), R.drawable.ic_more_vert_black_24dp, R.color.light_normal_color);
+                    getContext(), R.drawable.ic_more_vert_black_24dp, R.color.dark_mode_tint);
             extraMenuItem.setIcon(iconDrawable);
         }
     }
@@ -292,7 +313,7 @@ public class SelectableListToolbar<E>
         });
 
         if (FeatureUtilities.isChromeModernDesignEnabled()) {
-            mClearTextButton.setPadding(ApiCompatibilityUtils.getPaddingStart(mClearTextButton),
+            mClearTextButton.setPadding(ViewCompat.getPaddingStart(mClearTextButton),
                     mClearTextButton.getPaddingTop(),
                     getResources().getDimensionPixelSize(R.dimen.clear_text_button_end_padding),
                     mClearTextButton.getPaddingBottom());
@@ -375,7 +396,6 @@ public class SelectableListToolbar<E>
      * @param navigationButton one of NAVIGATION_BUTTON_* constants.
      */
     protected void setNavigationButton(int navigationButton) {
-        int iconResId = 0;
         int contentDescriptionId = 0;
 
         if (navigationButton == NAVIGATION_BUTTON_MENU && mDrawerLayout == null) {
@@ -402,23 +422,18 @@ public class SelectableListToolbar<E>
             case NAVIGATION_BUTTON_NONE:
                 break;
             case NAVIGATION_BUTTON_BACK:
-                // TODO(twellington): use ic_arrow_back_white_24dp and tint it.
-                iconResId = R.drawable.back_normal;
+                mNavigationIconDrawable.setTint(mDarkIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
             case NAVIGATION_BUTTON_SELECTION_BACK:
-                iconResId = R.drawable.ic_arrow_back_white_24dp;
+                mNavigationIconDrawable.setTint(mLightIconColorList);
                 contentDescriptionId = R.string.accessibility_cancel_selection;
                 break;
             default:
                 assert false : "Incorrect navigationButton argument";
         }
 
-        if (iconResId == 0) {
-            setNavigationIcon(null);
-        } else {
-            setNavigationIcon(iconResId);
-        }
+        setNavigationIcon(contentDescriptionId == 0 ? null : mNavigationIconDrawable);
         setNavigationContentDescription(contentDescriptionId);
 
         updateDisplayStyleIfNecessary();
@@ -538,16 +553,16 @@ public class SelectableListToolbar<E>
             params.setMargins(0, params.topMargin, 0, params.bottomMargin);
         }
         setLayoutParams(params);
-        // Navigation button should have more padding start in the modern search view.
-        if (isModernSearchViewEnabled) paddingStartOffset += mModernSearchViewStartOffsetPx;
 
+        // Navigation button should have more start padding in order to keep the navigation icon
+        // and the list item icon aligned.
         int navigationButtonStartOffsetPx =
                 mNavigationButton != NAVIGATION_BUTTON_NONE ? mModernNavButtonStartOffsetPx : 0;
 
         int actionMenuBarEndOffsetPx = mIsSelectionEnabled ? mModernToolbarActionMenuEndOffsetPx
                                                            : mModernToolbarSearchIconOffsetPx;
 
-        ApiCompatibilityUtils.setPaddingRelative(this,
+        ViewCompat.setPaddingRelative(this,
                 padding + paddingStartOffset + navigationButtonStartOffsetPx, this.getPaddingTop(),
                 padding + actionMenuBarEndOffsetPx, this.getPaddingBottom());
     }
@@ -623,6 +638,7 @@ public class SelectableListToolbar<E>
         setNavigationButton(NAVIGATION_BUTTON_BACK);
         if (FeatureUtilities.isChromeModernDesignEnabled()) {
             setBackgroundResource(R.drawable.search_toolbar_modern_bg);
+            updateStatusBarColor(mSearchBackgroundColor);
         } else {
             setBackgroundColor(mSearchBackgroundColor);
         }
@@ -706,9 +722,9 @@ public class SelectableListToolbar<E>
         MenuItem infoMenuItem = getMenu().findItem(mInfoMenuItemId);
         if (infoMenuItem != null) {
             if (mShowInfoIcon) {
-                Drawable iconDrawable = TintedDrawable.constructTintedDrawable(getResources(),
-                        R.drawable.btn_info,
-                        infoShowing ? R.color.light_active_color : R.color.light_normal_color);
+                Drawable iconDrawable =
+                        TintedDrawable.constructTintedDrawable(getContext(), R.drawable.btn_info,
+                                infoShowing ? R.color.blue_mode_tint : R.color.dark_mode_tint);
 
                 infoMenuItem.setIcon(iconDrawable);
             }
@@ -735,6 +751,25 @@ public class SelectableListToolbar<E>
         // The super class adds an AppCompatTextView for the title which not focusable by default.
         // Set TextView children to focusable so the title can gain focus in accessibility mode.
         makeTextViewChildrenAccessible();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+
+        updateStatusBarColor(color);
+    }
+
+    private void updateStatusBarColor(int color) {
+        if (!mUpdateStatusBarColor) return;
+
+        Context context = getContext();
+        if (!(context instanceof Activity)) return;
+
+        Window window = ((Activity) context).getWindow();
+        ApiCompatibilityUtils.setStatusBarColor(window, color);
+        ApiCompatibilityUtils.setStatusBarIconColor(window.getDecorView().getRootView(),
+                !ColorUtils.shouldUseLightForegroundOnBackground(color));
     }
 
     @VisibleForTesting
