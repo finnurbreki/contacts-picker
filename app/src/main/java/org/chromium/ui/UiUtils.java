@@ -127,7 +127,7 @@ public class UiUtils {
     // ContactsPickerDelegate:
 
     /**
-     * Allows setting a delegate to override the default Android contacts picker.
+     * Allows setting a delegate for an Android contacts picker.
      * @param delegate A {@link ContactsPickerDelegate} instance.
      */
     public static void setContactsPickerDelegate(ContactsPickerDelegate delegate) {
@@ -147,9 +147,10 @@ public class UiUtils {
      * @param listener The listener that will be notified of the action the user took in the
      *                 picker.
      */
-    public static boolean showContactsPicker(Context context, ContactsPickerListener listener) {
+    public static boolean showContactsPicker(
+            Context context, ContactsPickerListener listener, boolean allowMultiple) {
         if (sContactsPickerDelegate == null) return false;
-        sContactsPickerDelegate.showContactsPicker(context, listener);
+        sContactsPickerDelegate.showContactsPicker(context, listener, allowMultiple);
         return true;
     }
 
@@ -170,8 +171,10 @@ public class UiUtils {
          * @param context  The context to use.
          * @param listener The listener that will be notified of the action the user took in the
          *                 picker.
+         * @param allowMultiple Whether to allow multiple contacts to be picked.
          */
-        void showContactsPicker(Context context, ContactsPickerListener listener);
+        void showContactsPicker(
+                Context context, ContactsPickerListener listener, boolean allowMultiple);
 
         /**
          * Called when the contacts picker dialog has been dismissed.

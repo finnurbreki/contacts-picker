@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ContactsPickerListener listener = new ContactsPickerListener() {
                     @Override
-                    public void onPickerUserAction(
-                            ContactsPickerListener.Action action, String[] contacts) {
+                    public void onContactsPickerUserAction(
+                            ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
                         switch (action) {
                             case CONTACTS_SELECTED:
                                 if (contacts != null) {

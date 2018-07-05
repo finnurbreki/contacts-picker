@@ -149,7 +149,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                executeAction(ContactsPickerListener.Action.CANCEL, null);
+                executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
             }
         });
 
@@ -254,7 +254,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
                 mSelectAllMode = !mSelectAllMode;
                 break;
             default:
-                executeAction(ContactsPickerListener.Action.CANCEL, null);
+                executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
                 break;
         }
     }
@@ -283,7 +283,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
             contacts[i++] = contactDetails.getDisplayName();
         }
 
-        executeAction(ContactsPickerListener.Action.CONTACTS_SELECTED, contacts);
+        executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, contacts);
     }
 
     /**
@@ -291,8 +291,8 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
      * @param action The action taken.
      * @param contacts The contacts that were selected (if any).
      */
-    private void executeAction(ContactsPickerListener.Action action, String[] contacts) {
-        mListener.onPickerUserAction(action, contacts);
+    private void executeAction(ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
+        mListener.onContactsPickerUserAction(action, contacts);
         mDialog.dismiss();
         UiUtils.onContactsPickerDismissed();
     }

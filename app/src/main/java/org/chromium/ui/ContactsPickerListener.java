@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ public interface ContactsPickerListener {
     /**
      * The action the user took in the picker.
      */
-    enum Action {
+    enum ContactsPickerAction {
         CANCEL,
         CONTACTS_SELECTED,
     }
@@ -21,5 +21,5 @@ public interface ContactsPickerListener {
      *
      * @param contacts The contacts that were selected.
      */
-    void onPickerUserAction(Action action, String[] contacts);
+    void onContactsPickerUserAction(ContactsPickerAction action, String[] contacts);
 }
