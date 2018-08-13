@@ -7,11 +7,11 @@ package com.example.finnur.contactspicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 
 // import org.chromium.chrome.R;
 // import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
@@ -37,14 +38,13 @@ import java.util.Set;
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView extends RelativeLayout implements View.OnClickListener,
-        SelectionDelegate.SelectionObserver<ContactDetails>,
-        SelectableListToolbar.SearchDelegate {
+public class PickerCategoryView extends RelativeLayout
+        implements View.OnClickListener, SelectionDelegate.SelectionObserver<ContactDetails>,
+                   SelectableListToolbar.SearchDelegate {
     // Constants for the RoundedIconGenerator.
     private static final int ICON_SIZE_DP = 32;
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
-    private static final int ICON_DEFAULT_BACKGROUND_COLOR = 0xFF323232;
 
     // The dialog that owns us.
     private ContactsPickerDialog mDialog;
@@ -53,7 +53,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     private SelectableListLayout<ContactDetails> mSelectableListLayout;
 
     // Our activity.
-    private /*ChromeActivity*/ Activity mActivity;
+    private Activity mActivity;
 
     // The callback to notify the listener of decisions reached in the picker.
     private ContactsPickerListener mListener;
@@ -90,7 +90,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     private boolean mSelectAllMode = true;
 
     // The state to restore to if Undo is used.
-    List<ContactDetails> mPreviousSelection = null;
+    List<ContactDetails> mPreviousSelection;
 
     // The MIME types requested.
     private List<String> mMimeTypes;
@@ -98,14 +98,16 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(Context context) {
         super(context);
-        mActivity = /*(ChromeActivity)*/ (Activity) context;
+        mActivity = (Activity) context;
 
         mSelectionDelegate = new SelectionDelegate<ContactDetails>();
         mSelectionDelegate.addObserver(this);
 
-        mIconGenerator = new RoundedIconGenerator(getActivity().getResources(), ICON_SIZE_DP,
-                ICON_SIZE_DP, ICON_CORNER_RADIUS_DP, ICON_DEFAULT_BACKGROUND_COLOR,
-                ICON_TEXT_SIZE_DP);
+        Resources resources = getActivity().getResources();
+        int iconColor =
+                ApiCompatibilityUtils.getColor(resources, R.color.default_favicon_background_color);
+        mIconGenerator = new RoundedIconGenerator(resources, ICON_SIZE_DP, ICON_SIZE_DP,
+                ICON_CORNER_RADIUS_DP, iconColor, ICON_TEXT_SIZE_DP);
 
         View root = LayoutInflater.from(context).inflate(R.layout.contacts_picker_dialog, this);
         mSelectableListLayout =
@@ -115,8 +117,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(mPickerAdapter);
         mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.contacts_picker_toolbar, mSelectionDelegate,
-                R.string.contacts_picker_select_contacts, null, 0,
-                0, R.color.default_primary_color,
+                R.string.contacts_picker_select_contacts, null, 0, 0, R.color.modern_primary_color,
                 null, false, false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
@@ -140,8 +141,8 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
      * @param listener The listener who should be notified of actions.
      * @param mimeTypes A list of mime types to show in the dialog.
      */
-    public void initialize(ContactsPickerDialog dialog, ContactsPickerListener listener,
-                           List<String> mimeTypes) {
+    public void initialize(
+            ContactsPickerDialog dialog, ContactsPickerListener listener, List<String> mimeTypes) {
         mDialog = dialog;
         mListener = listener;
         mMimeTypes = new ArrayList<>(mimeTypes);
@@ -162,7 +163,6 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         // Showing the search clears current selection. Save it, so we can restore it after the
         // search has completed.
         mPreviousSelection = mSelectionDelegate.getSelectedItems();
-        mDoneButton.setEnabled(false);
         mSearchButton.setVisibility(GONE);
         mToolbar.showSearchView();
     }
@@ -174,12 +174,12 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         mPickerAdapter.setSearchString("");
         mToolbar.showCloseButton();
         mToolbar.setNavigationOnClickListener(this);
-        mDoneButton.setEnabled(true);
         mDoneButton.setVisibility(VISIBLE);
         mSearchButton.setVisibility(VISIBLE);
 
         // Hiding the search view clears the selection. Save it first and restore to the old
         // selection, with the new item added during search.
+        // TODO(finnur): This needs to be revisited after UX is finalized.
         HashSet<ContactDetails> selection = new HashSet<>();
         for (ContactDetails item : mSelectionDelegate.getSelectedItems()) {
             selection.add(item);
@@ -199,7 +199,7 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
             @Override
             protected void onPostExecute(HashSet<ContactDetails> result) {
-                mSelectionDelegate.toggleSelectionForItems(result);
+                mSelectionDelegate.setSelectedItems(result);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selection);
     }
@@ -211,9 +211,10 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
 
     // SelectionDelegate.SelectionObserver:
 
+    @Override
     public void onSelectionStateChange(List<ContactDetails> selectedItems) {
-        // Once a selection is made, drop out of search mode. Note: This function is also called when
-        // entering search mode (with selectedItems then being 0 in size).
+        // Once a selection is made, drop out of search mode. Note: This function is also called
+        // when entering search mode (with selectedItems then being 0 in size).
         if (mToolbar.isSearching() && selectedItems.size() > 0) {
             mToolbar.hideSearchView();
         }
@@ -222,9 +223,11 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
         // state to revert to (one might not exist if they were all selected manually).
         // TODO(finnur): Add automatic test that exercises the visibility of the action button,
         //               including when all items are selected manually (special case).
-        mActionButton.setVisibility(!mToolbar.isSearching() &&
-                selectedItems.size() != mPickerAdapter.getItemCount() ||
-                mPreviousSelection != null ? VISIBLE : GONE);
+        mActionButton.setVisibility(
+                !mToolbar.isSearching() && selectedItems.size() != mPickerAdapter.getItemCount()
+                                || mPreviousSelection != null
+                        ? VISIBLE
+                        : GONE);
     }
 
     // OnClickListener:
@@ -232,36 +235,33 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        switch (id) {
-            case R.id.done:
-                notifyContactsSelected();
-                break;
-            case R.id.search:
-                onStartSearch();
-                break;
-            case R.id.action:
-                if (mSelectAllMode) {
-                    mPreviousSelection = mSelectionDelegate.getSelectedItems();
-                    mSelectionDelegate.toggleSelectionForItems(mPickerAdapter.getAllContacts());
-                    mActionButton.setImageResource(R.drawable.ic_undo);
-                } else {
-                    Set<ContactDetails> previousSelection =
-                            new HashSet<ContactDetails>(mPreviousSelection);
-                    mSelectionDelegate.toggleSelectionForItems(previousSelection);
-                    mActionButton.setImageResource(R.drawable.ic_select_all);
-                    mPreviousSelection = null;
-                }
-                mSelectAllMode = !mSelectAllMode;
-                break;
-            default:
-                executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
-                break;
+        if (id == R.id.done) {
+            notifyContactsSelected();
+        } else if (id == R.id.search) {
+            onStartSearch();
+        } else if (id == R.id.action) {
+            if (mSelectAllMode) {
+                mPreviousSelection = mSelectionDelegate.getSelectedItems();
+                mSelectionDelegate.setSelectedItems(mPickerAdapter.getAllContacts());
+                mActionButton.setImageResource(R.drawable.ic_undo);
+            } else {
+                Set<ContactDetails> previousSelection =
+                        new HashSet<ContactDetails>(mPreviousSelection);
+                mSelectionDelegate.setSelectedItems(previousSelection);
+                mActionButton.setImageResource(R.drawable.ic_select_all);
+                mPreviousSelection = null;
+            }
+            mSelectAllMode = !mSelectAllMode;
+        } else {
+            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
         }
     }
 
     // Simple accessors:
 
-    public Activity getActivity() { return mActivity; }
+    public Activity getActivity() {
+        return mActivity;
+    }
 
     public SelectionDelegate<ContactDetails> getSelectionDelegate() {
         return mSelectionDelegate;
@@ -291,7 +291,8 @@ public class PickerCategoryView extends RelativeLayout implements View.OnClickLi
      * @param action The action taken.
      * @param contacts The contacts that were selected (if any).
      */
-    private void executeAction(ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
+    private void executeAction(
+            ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
         mListener.onContactsPickerUserAction(action, contacts);
         mDialog.dismiss();
         UiUtils.onContactsPickerDismissed();

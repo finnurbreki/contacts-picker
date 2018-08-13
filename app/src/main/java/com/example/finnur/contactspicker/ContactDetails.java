@@ -38,7 +38,9 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * Accessor for the display name.
      * @return The full display name.
      */
-    public String getDisplayName() { return mDisplayName; }
+    public String getDisplayName() {
+        return mDisplayName;
+    }
 
     /**
      * Accessor for the abbreviated display name (first letter of first name and first letter of
@@ -52,7 +54,7 @@ public class ContactDetails implements Comparable<ContactDetails> {
             displayChars += mDisplayName.charAt(0);
             String[] parts = mDisplayName.split(" ");
             if (parts.length > 1) {
-                displayChars += parts[parts.length -1].charAt(0);
+                displayChars += parts[parts.length - 1].charAt(0);
             }
         }
 
@@ -64,16 +66,16 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * @return A string containing all the emails registered for this contact.
      */
     public String getEmailsAsString() {
-        String emails = "";
         int count = 0;
+        StringBuilder builder = new StringBuilder();
         for (String email : mEmails) {
             if (count++ > 0) {
-                emails += "\n";
+                builder.append("\n");
             }
-            emails += email;
+            builder.append(email);
         }
 
-        return emails;
+        return builder.toString();
     }
 
     /**
@@ -94,12 +96,9 @@ public class ContactDetails implements Comparable<ContactDetails> {
 
     @Override
     public boolean equals(@Nullable Object object) {
-        if (object == null)
-            return false;
-        if (object == this)
-            return true;
-        if (!(object instanceof ContactDetails))
-            return false;
+        if (object == null) return false;
+        if (object == this) return true;
+        if (!(object instanceof ContactDetails)) return false;
 
         ContactDetails otherInfo = (ContactDetails) object;
         return mId.equals(otherInfo.mId);

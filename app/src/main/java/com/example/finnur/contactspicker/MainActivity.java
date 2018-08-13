@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
 
-                mDialog = new ContactsPickerDialog(getWindow().getContext(), listener, Arrays.asList("image/*"));
-                mDialog.getWindow().getAttributes().windowAnimations = R.style.ContactsPickerDialogAnimation;
+                mDialog = new ContactsPickerDialog(getWindow().getContext(), listener, true, Arrays.asList("image/*"));
+                mDialog.getWindow().getAttributes().windowAnimations = R.style.PickerDialogAnimation;
                 // This removes the padding around the dialog.
                 mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 mDialog.show();

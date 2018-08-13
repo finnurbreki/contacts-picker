@@ -12,8 +12,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 
-import com.example.finnur.contactspicker.R;
-
 import org.chromium.chrome.browser.widget.ImageViewTinter.ImageViewTinterOwner;
 
 /**

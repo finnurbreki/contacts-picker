@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
 import java.util.List;
 
 /**
- * Handles toolbar functionality for the Contacts Picker class.
+ * Handles toolbar functionality for the {@ContactsPickerDialog}.
  */
 public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails> {
     public ContactsPickerToolbar(Context context, AttributeSet attrs) {
@@ -31,6 +31,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
 
         TextView up = (TextView) mNumberRollView.findViewById(R.id.up);
         TextView down = (TextView) mNumberRollView.findViewById(R.id.down);
+        // TODO(finnur): Change this to use pre-defined styles.
         up.setTextColor(Color.BLACK);
         down.setTextColor(Color.BLACK);
     }

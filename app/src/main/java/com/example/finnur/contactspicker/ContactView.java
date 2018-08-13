@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,17 +66,12 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     @Override
     public void onClick() {
-        if (mContactDetails == null)
-            return; // Clicks are disabled until initialize() has been called.
+        // Clicks are disabled until initialize() has been called.
+        if (mContactDetails == null) return;
 
         // The SelectableItemView expects long press to be the selection event, but this class wants
         // that to happen on click instead.
         onLongClick(this);
-    }
-
-    @Override
-    protected boolean toggleSelectionForItem(ContactDetails item) {
-        return super.toggleSelectionForItem(item);
     }
 
     @Override
@@ -88,31 +82,18 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     @Override
     public void onSelectionStateChange(List<ContactDetails> selectedItems) {
-        // If the user cancels the dialog before this object has initialized,
-        // the SelectionDelegate will try to notify us that all selections have
-        // been cleared. However, we don't need to process that message.
+        // If the user cancels the dialog before this object has initialized, the SelectionDelegate
+        // will try to notify us that all selections have been cleared. However, we don't need to
+        // process that message.
         if (mContactDetails == null) return;
 
         // When SelectAll or Undo is used, the underlying UI must be updated
         // to reflect the changes.
         boolean selected = selectedItems.contains(mContactDetails);
         boolean checked = super.isChecked();
-        if (selected != checked) {
-            super.toggle();
-        }
+        if (selected != checked) super.toggle();
 
         updateSelectionState();
-    }
-
-    @Override
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-        super.onInitializeAccessibilityNodeInfo(info);
-
-        info.setCheckable(true);
-        info.setChecked(isChecked());
-        CharSequence text = mContactDetails.getDisplayName() + " "
-                + mContactDetails.getEmailsAsString();
-        info.setText(text);
     }
 
     /**
@@ -144,7 +125,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
                 contactDetails.getDisplayNameAbbreviation(), 2);
         mImage.setImageBitmap(icon);
 
-
         updateSelectionState();
     }
 
@@ -166,9 +146,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         boolean checked = super.isChecked();
 
         Resources resources = mContext.getResources();
-        int bgColorId = checked
-                ? R.color.selectable_list_item_highlight_color
-                : R.color.contacts_picker_tile_bg_color;
+        int bgColorId = checked ? R.color.selectable_list_item_highlight_color
+                                : R.color.contacts_picker_tile_bg_color;
         setBackgroundColor(ApiCompatibilityUtils.getColor(resources, bgColorId));
 
         mSelectedView.setVisibility(checked ? View.VISIBLE : View.GONE);

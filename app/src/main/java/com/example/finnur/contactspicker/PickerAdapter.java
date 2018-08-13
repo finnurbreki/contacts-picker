@@ -4,18 +4,15 @@
 
 package com.example.finnur.contactspicker;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,7 +25,19 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     // A cursor containing the raw contacts data.
     private Cursor mContactsCursor;
 
-    @SuppressLint("InlinedApi")
+    /**
+     * Holds on to a {@link ContactView} that displays information about a contact.
+     */
+    public class ContactViewHolder extends ViewHolder {
+        /**
+         * The ContactViewHolder.
+         * @param itemView The {@link ContactView} view for showing the contact details.
+         */
+        public ContactViewHolder(ContactView itemView) {
+            super(itemView);
+        }
+    }
+
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.LOOKUP_KEY,
@@ -41,10 +50,8 @@ public class PickerAdapter extends Adapter<ViewHolder> {
      */
     public PickerAdapter(PickerCategoryView categoryView) {
         mCategoryView = categoryView;
-
         mContactsCursor = mCategoryView.getActivity().getContentResolver().query(
-                ContactsContract.Contacts.CONTENT_URI, PROJECTION,
-                null, null,
+                ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC");
     }
 
@@ -54,8 +61,9 @@ public class PickerAdapter extends Adapter<ViewHolder> {
      */
     public void setSearchString(String query) {
         String searchString = "%" + query + "%";
-        String[] selectionArgs = { searchString };
+        String[] selectionArgs = {searchString};
         mContactsCursor.close();
+
         mContactsCursor = mCategoryView.getActivity().getContentResolver().query(
                 ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?", selectionArgs,
@@ -73,8 +81,8 @@ public class PickerAdapter extends Adapter<ViewHolder> {
         do {
             String id = mContactsCursor.getString(
                     mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
-            String name = mContactsCursor.getString(mContactsCursor.getColumnIndex(
-                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+            String name = mContactsCursor.getString(
+                    mContactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
             contacts.add(new ContactDetails(id, name, getEmails()));
         } while (mContactsCursor.moveToNext());
 
@@ -85,43 +93,37 @@ public class PickerAdapter extends Adapter<ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.contact_view, parent, false);
-        ContactView bitmapView = (ContactView) itemView;
-        bitmapView.setCategoryView(mCategoryView);
-        return new ContactViewHolder(bitmapView);
+        ContactView itemView = (ContactView) LayoutInflater.from(parent.getContext())
+                                       .inflate(R.layout.contact_view, parent, false);
+        itemView.setCategoryView(mCategoryView);
+        return new ContactViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (holder instanceof ContactViewHolder) {
-            ContactViewHolder myHolder = (ContactViewHolder) holder;
-
-            String id = "";
-            String name = "";
-            if (mContactsCursor.moveToPosition(position)) {
-                id = mContactsCursor.getString(
-                        mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
-                name = mContactsCursor.getString(mContactsCursor.getColumnIndex(
-                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-            }
-
-            ContactDetails contactDetails = new ContactDetails(id, name, getEmails());
-            myHolder.displayItem(contactDetails);
+        String id = "";
+        String name = "";
+        if (mContactsCursor.moveToPosition(position)) {
+            id = mContactsCursor.getString(
+                    mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
+            name = mContactsCursor.getString(
+                    mContactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
         }
+
+        ((ContactView) holder.itemView).initialize(new ContactDetails(id, name, getEmails()));
     }
 
     private Cursor getEmailCursor(String id) {
         Cursor emailCursor = mCategoryView.getActivity().getContentResolver().query(
-                ContactsContract.CommonDataKinds.Email.CONTENT_URI,null,
-                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
-                null, ContactsContract.CommonDataKinds.Email.DATA + " ASC");
+                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id, null,
+                ContactsContract.CommonDataKinds.Email.DATA + " ASC");
         return emailCursor;
     }
 
     private ArrayList<String> getEmails() {
-        // Look up all associated emails for this contact. Would be nice to be able to do
-        // this in one go with the original cursor...
+        // Look up all associated emails for this contact.
+        // TODO(finnur): Investigate whether we can do this in one go with the original cursor...
         String id = mContactsCursor.getString(
                 mContactsCursor.getColumnIndex(ContactsContract.Contacts._ID));
         Cursor emailCursor = getEmailCursor(id);

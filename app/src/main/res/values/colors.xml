@@ -15,6 +15,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="contacts_picker_tile_bg_color">#eeeeee</color>
+    <color name="default_favicon_background_color">#787878</color>
     <color name="default_icon_color">@color/modern_grey_800</color>
     <color name="default_icon_color_blue">@color/modern_blue_600</color>
     <color name="default_primary_color">#f2f2f2</color>

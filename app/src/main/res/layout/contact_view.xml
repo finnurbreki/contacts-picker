@@ -10,10 +10,11 @@
 <view class="com.example.finnur.contactspicker.ContactView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:orientation="horizontal">
@@ -22,57 +23,41 @@
             android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="10sp"
-            android:paddingEnd="10sp"
-            android:paddingStart="10sp"
-            android:paddingTop="12sp" />
+            android:layout_alignParentStart="true"
+            android:paddingBottom="10dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="12dp"
+            tools:ignore="ContentDescription" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/name"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:paddingTop="5dp"
+            android:layout_toEndOf="@id/image"
+            style="@style/BlackTitle1" />
+
+        <TextView
+            android:id="@+id/email"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:paddingBottom="5dp"
+            android:layout_below="@id/name"
+            android:layout_alignStart="@id/name"
+            style="@style/BlackBody"/>
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingTop="5sp"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/email"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingBottom="5sp"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:gravity="right"
-            android:paddingTop="5sp"
-            android:paddingEnd="5sp">
-
-            <ImageView
-                android:id="@+id/selected"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="2dp"
-                android:contentDescription="@null"
-                android:visibility="gone"
-                app:srcCompat="@drawable/checkmark_blue" />
-
-            <ImageView
-                android:id="@+id/unselected"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/circle_white"
-                android:contentDescription="@null"
-                android:visibility="gone" />
-        </LinearLayout>
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/selected"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            app:srcCompat="@drawable/checkmark_blue"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
 </view>

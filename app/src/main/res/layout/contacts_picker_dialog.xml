@@ -3,7 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,18 +13,17 @@
     tools:context="com.example.finnur.contactspicker.MainActivity">
 
     <org.chromium.chrome.browser.widget.selection.SelectableListLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/selectable_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_primary_color" />
+        android:background="@color/modern_primary_color" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorPrimary"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/light_active_color"
         app:srcCompat="@drawable/ic_select_all" />
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

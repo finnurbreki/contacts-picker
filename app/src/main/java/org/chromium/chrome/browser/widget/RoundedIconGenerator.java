@@ -99,9 +99,20 @@ public class RoundedIconGenerator {
     }
 
     /**
-     * Generates an icon based on |text|.
+     * Generates an icon based on |text| (using the first character).
      *
      * @param text The text to render the first character of on the icon.
+     * @return The generated icon.
+     */
+    public Bitmap generateIconForText(String text) {
+        return generateIconForText(text, 1);
+    }
+
+    /**
+     * Generates an icon based on |text|.
+     *
+     * @param text The text to render on the icon.
+     * @param numChars The number of characters to use.
      * @return The generated icon.
      */
     public Bitmap generateIconForText(String text, int numChars) {
@@ -137,7 +148,7 @@ public class RoundedIconGenerator {
         String text = getIconTextForUrl(url, includePrivateRegistries);
         if (TextUtils.isEmpty(text)) return null;
 
-        return generateIconForText(text, 1);
+        return generateIconForText(text);
     }
 
     /**

@@ -3,7 +3,7 @@
      found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -68,9 +68,21 @@
         <item name="android:contentDescription">@null</item>
     </style>
 
-    <style name="ContactsPickerDialogAnimation">
+    <!-- Picker Dialog -->
+    <style name="BlackBodyDefault" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/black_alpha_87</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
+    <style name="PickerDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/design_bottom_sheet_slide_in</item>
         <item name="android:windowExitAnimation">@null</item>
+    </style>
+
+    <style name="PickerDoneButton">
+        <item name="android:textAppearance">@style/BlackBodyDefault</item>
+        <item name="android:textColor">@color/blue_when_enabled</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="RobotoMediumStyle">
