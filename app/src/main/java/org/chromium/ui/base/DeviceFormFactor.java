@@ -139,11 +139,4 @@ public class DeviceFormFactor {
         return DisplayUtil.dpToPx(display, DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
     }
     */
-
-    /* Not needed for Android Studio project.
-    // Function is private to ensure that Context is also consulted when answering this query.
-    private static boolean isTabletDisplay(DisplayAndroid display) {
-        return DisplayUtil.getSmallestWidth(display) >= getMinimumTabletWidthPx(display);
-    }
-    */
 }

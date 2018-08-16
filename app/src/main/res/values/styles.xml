@@ -68,6 +68,37 @@
         <item name="android:contentDescription">@null</item>
     </style>
 
+    <!-- Picker Dialog dependencies -->
+    <style name="ButtonCompatBase">
+        <item name="android:minWidth">88dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+    </style>
+
+    <style name="ButtonCompat" parent="ButtonCompatBase">
+        <item name="android:background">@drawable/button_compat_shape</item>
+    </style>
+
+    <style name="ButtonCompatBorderless" parent="ButtonCompat">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="BlueButtonText2" parent="RobotoMediumStyle" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="MainButtonStyle" parent="ButtonCompatBorderless">
+        <item name="android:textAppearance">@style/BlueButtonText2</item>
+    </style>
+
     <!-- Picker Dialog -->
     <style name="BlackBodyDefault" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/black_alpha_87</item>

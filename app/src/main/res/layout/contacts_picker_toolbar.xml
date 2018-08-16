@@ -30,9 +30,8 @@
             android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:enabled="false"
             android:text="@string/done"
-            style="@style/PickerDoneButton" />
+            style="@style/MainButtonStyle" />
     </LinearLayout>
 </com.example.finnur.contactspicker.ContactsPickerToolbar>

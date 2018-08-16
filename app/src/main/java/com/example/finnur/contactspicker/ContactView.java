@@ -7,6 +7,7 @@ package com.example.finnur.contactspicker;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -145,10 +146,13 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private void updateSelectionState() {
         boolean checked = super.isChecked();
 
-        Resources resources = mContext.getResources();
-        int bgColorId = checked ? R.color.selectable_list_item_highlight_color
-                                : R.color.contacts_picker_tile_bg_color;
-        setBackgroundColor(ApiCompatibilityUtils.getColor(resources, bgColorId));
+        if (checked) {
+            Resources resources = mContext.getResources();
+            setBackgroundColor(ApiCompatibilityUtils.getColor(
+                    resources, R.color.selectable_list_item_highlight_color));
+        } else {
+            setBackgroundColor(Color.TRANSPARENT);
+        }
 
         mSelectedView.setVisibility(checked ? View.VISIBLE : View.GONE);
     }

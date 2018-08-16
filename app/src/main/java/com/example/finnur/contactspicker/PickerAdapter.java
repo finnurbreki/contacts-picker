@@ -39,8 +39,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     }
 
     private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
+            ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
