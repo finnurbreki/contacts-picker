@@ -112,7 +112,7 @@ public class RoundedIconGenerator {
      * Generates an icon based on |text|.
      *
      * @param text The text to render on the icon.
-     * @param numChars The number of characters to use.
+     * @param numChars The maximum number of characters to return.
      * @return The generated icon.
      */
     public Bitmap generateIconForText(String text, int numChars) {
@@ -121,7 +121,8 @@ public class RoundedIconGenerator {
 
         canvas.drawRoundRect(mBackgroundRect, mCornerRadiusPx, mCornerRadiusPx, mBackgroundPaint);
 
-        String displayText = text.substring(0, numChars).toUpperCase(Locale.getDefault());
+        int length = Math.min(numChars, text.length());
+        String displayText = text.substring(0, length).toUpperCase(Locale.getDefault());
         float textWidth = mTextPaint.measureText(displayText);
 
         canvas.drawText(

@@ -4,12 +4,15 @@
 
 package com.example.finnur.contactspicker;
 
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+//import org.chromium.chrome.R;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +24,9 @@ import java.util.Set;
 public class PickerAdapter extends Adapter<ViewHolder> {
     // The category view to use to show the contacts.
     private PickerCategoryView mCategoryView;
+
+    // The content resolver to query data from.
+    private ContentResolver mContentResolver;
 
     // A cursor containing the raw contacts data.
     private Cursor mContactsCursor;
@@ -46,12 +52,13 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     /**
      * The PickerAdapter constructor.
      * @param categoryView The category view to use to show the contacts.
+     * @param contentResolver The content resolver to use to fetch the data.
      */
-    public PickerAdapter(PickerCategoryView categoryView) {
+    public PickerAdapter(PickerCategoryView categoryView, ContentResolver contentResolver) {
         mCategoryView = categoryView;
-        mContactsCursor = mCategoryView.getActivity().getContentResolver().query(
-                ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null,
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC");
+        mContentResolver = contentResolver;
+        mContactsCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+                null, null, ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC");
     }
 
     /**
@@ -63,8 +70,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
         String[] selectionArgs = {searchString};
         mContactsCursor.close();
 
-        mContactsCursor = mCategoryView.getActivity().getContentResolver().query(
-                ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+        mContactsCursor = mContentResolver.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?", selectionArgs,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC");
         notifyDataSetChanged();
@@ -113,10 +119,10 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     }
 
     private Cursor getEmailCursor(String id) {
-        Cursor emailCursor = mCategoryView.getActivity().getContentResolver().query(
-                ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id, null,
-                ContactsContract.CommonDataKinds.Email.DATA + " ASC");
+        Cursor emailCursor =
+                mContentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id, null,
+                        ContactsContract.CommonDataKinds.Email.DATA + " ASC");
         return emailCursor;
     }
 

@@ -14,9 +14,12 @@
     <string name="app_name">Contact Picker</string>
     <string name="close">Close</string>
     <string name="contacts_picker_search">Search your contacts</string>
+    <string name="contacts_picker_select_contact">Select a contact</string>
     <string name="contacts_picker_select_contacts">Select contacts</string>
     <string name="done">Done</string>
     <string name="hide_info">Hide Info</string>
     <string name="search">Search</string>
+    <string name="select_all">Select all</string>
     <string name="show_info">Show Info</string>
+    <string name="undo">Undo</string>
 </resources>
