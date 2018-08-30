@@ -91,6 +91,9 @@ public class PickerCategoryView extends RelativeLayout
     // active.
     private boolean mSelectAllMode = true;
 
+    // Whether the picker is in multi-selection mode.
+    private boolean mMultiSelectionAllowed;
+
     // The MIME types requested.
     private List<String> mMimeTypes;
 
@@ -100,6 +103,8 @@ public class PickerCategoryView extends RelativeLayout
      */
     public PickerCategoryView(Context context, boolean multiSelectionAllowed) {
         super(context);
+
+        mMultiSelectionAllowed = multiSelectionAllowed;
 
         mSelectionDelegate = new SelectionDelegate<ContactDetails>();
         if (!multiSelectionAllowed) mSelectionDelegate.setSingleSelectionMode();
@@ -129,15 +134,20 @@ public class PickerCategoryView extends RelativeLayout
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
 
         mActionButton = (ImageView) root.findViewById(R.id.action);
-        mActionButton.setOnClickListener(this);
+        if (multiSelectionAllowed) {
+            mActionButton.setOnClickListener(this);
+
+            mLabelSelectAll = resources.getString(R.string.select_all);
+            mLabelUndo = resources.getString(R.string.undo);
+            mActionButton.setContentDescription(mLabelSelectAll);
+        } else {
+            mActionButton.setVisibility(GONE);
+        }
+
         mSearchButton = (ImageView) mToolbar.findViewById(R.id.search);
         mSearchButton.setOnClickListener(this);
         mDoneButton = (Button) mToolbar.findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
-
-        mLabelSelectAll = resources.getString(R.string.select_all);
-        mLabelUndo = resources.getString(R.string.undo);
-        mActionButton.setContentDescription(mLabelSelectAll);
 
         mLayoutManager = new LinearLayoutManager(context);
         mRecyclerView.setHasFixedSize(true);
@@ -232,7 +242,7 @@ public class PickerCategoryView extends RelativeLayout
         // state to revert to (one might not exist if they were all selected manually).
         // TODO(finnur): Add automatic test that exercises the visibility of the action button,
         //               including when all items are selected manually (special case).
-        mActionButton.setVisibility(!mToolbar.isSearching()
+        mActionButton.setVisibility(!mToolbar.isSearching() && mMultiSelectionAllowed
                                 && (selectedItems.size() != mPickerAdapter.getItemCount()
                                            || mPreviousSelection != null)
                         ? VISIBLE

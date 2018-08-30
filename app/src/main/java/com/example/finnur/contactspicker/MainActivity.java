@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
                         switch (action) {
                             case CONTACTS_SELECTED:
                                 if (contacts != null) {
-                                    for (String path : contacts) {
-                                        Log.e("***** ", "**** Contact selected: " + path);
+                                    for (String contact : contacts) {
+                                        Log.e("***** ", "**** Contact selected: " + contact);
                                     }
                                 }
                                 break;
