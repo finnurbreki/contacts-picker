@@ -290,15 +290,23 @@ public class PickerCategoryView extends RelativeLayout
      * Notifies any listeners that one or more contacts have been selected.
      */
     private void notifyContactsSelected() {
-        List<ContactDetails> selectedFiles = mSelectionDelegate.getSelectedItemsAsList();
-        Collections.sort(selectedFiles);
-        String[] contacts = new String[selectedFiles.size()];
-        int i = 0;
-        for (ContactDetails contactDetails : selectedFiles) {
-            contacts[i++] = contactDetails.getDisplayName();
-        }
+        List<ContactDetails> selectedContacts = mSelectionDelegate.getSelectedItemsAsList();
+        Collections.sort(selectedContacts);
 
-        executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, contacts);
+        StringBuilder builder = new StringBuilder();
+        int count = 0;
+
+        builder.append("[ ");
+        for (ContactDetails contactDetails : selectedContacts) {
+            if (count++ > 0) {
+                builder.append(", ");
+            }
+            contactDetails.appendJson(builder);
+        }
+        builder.append(" ]");
+
+
+        executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, builder.toString());
     }
 
     /**
@@ -307,7 +315,7 @@ public class PickerCategoryView extends RelativeLayout
      * @param contacts The contacts that were selected (if any).
      */
     private void executeAction(
-            ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
+            ContactsPickerListener.ContactsPickerAction action, String contacts) {
         mListener.onContactsPickerUserAction(action, contacts);
         mDialog.dismiss();
         UiUtils.onContactsPickerDismissed();

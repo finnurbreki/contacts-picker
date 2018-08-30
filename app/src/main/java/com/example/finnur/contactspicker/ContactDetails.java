@@ -79,6 +79,38 @@ public class ContactDetails implements Comparable<ContactDetails> {
     }
 
     /**
+     * Appends to a string |builder| the emails of this contacts (in json form).
+     * @param builder The StringBuilder object to append the data do.
+     */
+    private void appendEmailsAsJson(StringBuilder builder) {
+        builder.append("[");
+
+        int count = 0;
+        for (String email : mEmails) {
+            if (count++ > 0) {
+                builder.append(", ");
+            }
+            builder.append("\"");
+            builder.append(email);
+            builder.append("\"");
+        }
+
+        builder.append("]");
+    }
+
+    /**
+     * Appends to a string |builder| this contact (in json form).
+     * @param builder The StringBuilder object to append the data do.
+     */
+    public void appendJson(StringBuilder builder) {
+        builder.append("{ name: \"");
+        builder.append(getDisplayName());
+        builder.append("\", emails: ");
+        appendEmailsAsJson(builder);
+        builder.append(" }");
+    }
+
+    /**
      * A comparison function (results in a full name ascending sorting).
      * @param other The other ContactDetails object to compare it with.
      * @return 0, 1, or -1, depending on which is bigger.

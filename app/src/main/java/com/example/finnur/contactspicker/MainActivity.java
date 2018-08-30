@@ -18,7 +18,6 @@ import android.util.Log;
 import org.chromium.ui.ContactsPickerListener;
 
 import java.util.Arrays;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,13 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 ContactsPickerListener listener = new ContactsPickerListener() {
                     @Override
                     public void onContactsPickerUserAction(
-                            ContactsPickerListener.ContactsPickerAction action, String[] contacts) {
+                            ContactsPickerListener.ContactsPickerAction action, String contacts) {
                         switch (action) {
                             case CONTACTS_SELECTED:
                                 if (contacts != null) {
-                                    for (String contact : contacts) {
-                                        Log.e("***** ", "**** Contact selected: " + contact);
-                                    }
+                                    Log.e("***** ", "**** Contact JSON: " + contacts);
                                 }
                                 break;
                             case CANCEL:
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
 
-                mDialog = new ContactsPickerDialog(getWindow().getContext(), listener, false, Arrays.asList("image/*"));
+                mDialog = new ContactsPickerDialog(getWindow().getContext(), listener, true, Arrays.asList("image/*"));
                 mDialog.getWindow().getAttributes().windowAnimations = R.style.PickerDialogAnimation;
                 // This removes the padding around the dialog.
                 mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
