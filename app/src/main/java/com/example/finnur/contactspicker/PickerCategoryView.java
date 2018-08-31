@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.JsonWriter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,8 @@ import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -293,20 +296,20 @@ public class PickerCategoryView extends RelativeLayout
         List<ContactDetails> selectedContacts = mSelectionDelegate.getSelectedItemsAsList();
         Collections.sort(selectedContacts);
 
-        StringBuilder builder = new StringBuilder();
-        int count = 0;
+        StringWriter out = new StringWriter();
+        final JsonWriter writer =  new JsonWriter(out);
 
-        builder.append("[ ");
-        for (ContactDetails contactDetails : selectedContacts) {
-            if (count++ > 0) {
-                builder.append(", ");
+        try {
+            writer.beginArray();
+            for (ContactDetails contactDetails : selectedContacts) {
+                contactDetails.appendJson(writer);
             }
-            contactDetails.appendJson(builder);
+            writer.endArray();
+            executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, out.toString());
+        } catch (IOException e) {
+            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
+            
         }
-        builder.append(" ]");
-
-
-        executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, builder.toString());
     }
 
     /**

@@ -5,6 +5,7 @@
 package com.example.finnur.contactspicker;
 
 import android.support.annotation.Nullable;
+import android.util.JsonWriter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,35 +80,20 @@ public class ContactDetails implements Comparable<ContactDetails> {
     }
 
     /**
-     * Appends to a string |builder| the emails of this contacts (in json form).
-     * @param builder The StringBuilder object to append the data do.
-     */
-    private void appendEmailsAsJson(StringBuilder builder) {
-        builder.append("[");
-
-        int count = 0;
-        for (String email : mEmails) {
-            if (count++ > 0) {
-                builder.append(", ");
-            }
-            builder.append("\"");
-            builder.append(email);
-            builder.append("\"");
-        }
-
-        builder.append("]");
-    }
-
-    /**
      * Appends to a string |builder| this contact (in json form).
-     * @param builder The StringBuilder object to append the data do.
+     * @param writer The JsonWriter object to add the data to.
      */
-    public void appendJson(StringBuilder builder) {
-        builder.append("{ name: \"");
-        builder.append(getDisplayName());
-        builder.append("\", emails: ");
-        appendEmailsAsJson(builder);
-        builder.append(" }");
+    public void appendJson(JsonWriter writer) throws IOException {
+        writer.beginObject();
+        writer.name("name");
+        writer.value(getDisplayName());
+        writer.name("emails");
+        writer.beginArray();
+        for (String email : mEmails) {
+            writer.value(email);
+        }
+        writer.endArray();
+        writer.endObject();
     }
 
     /**
