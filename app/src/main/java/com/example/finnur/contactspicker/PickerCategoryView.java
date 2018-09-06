@@ -100,10 +100,11 @@ public class PickerCategoryView extends RelativeLayout
     // The MIME types requested.
     private List<String> mMimeTypes;
 
-    @SuppressWarnings("unchecked") // mSelectableListLayout
     /**
-      * @param multiSelectionAllowed Whether the contacts picker should allow multiple items to be selected.
+     * @param multiSelectionAllowed Whether the contacts picker should allow multiple items to be
+     * selected.
      */
+    @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(Context context, boolean multiSelectionAllowed) {
         super(context);
 

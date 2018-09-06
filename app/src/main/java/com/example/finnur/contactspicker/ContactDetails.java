@@ -7,6 +7,7 @@ package com.example.finnur.contactspicker;
 import android.support.annotation.Nullable;
 import android.util.JsonWriter;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
