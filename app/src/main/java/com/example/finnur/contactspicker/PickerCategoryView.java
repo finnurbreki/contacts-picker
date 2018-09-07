@@ -126,14 +126,11 @@ public class PickerCategoryView extends RelativeLayout
 
         mPickerAdapter = new PickerAdapter(this, context.getContentResolver());
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(mPickerAdapter);
-        int titleId = multiSelectionAllowed
-                ? R.string.contacts_picker_select_contacts
-                : R.string.contacts_picker_select_contact;
+        int titleId = multiSelectionAllowed ? R.string.contacts_picker_select_contacts
+                                            : R.string.contacts_picker_select_contact;
         mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.contacts_picker_toolbar, mSelectionDelegate,
-                titleId, null, 0, 0,
-                R.color.modern_primary_color,
-                null, false, false);
+                R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, null, 0, 0,
+                R.color.modern_primary_color, null, false, false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
 
@@ -298,7 +295,7 @@ public class PickerCategoryView extends RelativeLayout
         Collections.sort(selectedContacts);
 
         StringWriter out = new StringWriter();
-        final JsonWriter writer =  new JsonWriter(out);
+        final JsonWriter writer = new JsonWriter(out);
 
         try {
             writer.beginArray();
@@ -306,10 +303,11 @@ public class PickerCategoryView extends RelativeLayout
                 contactDetails.appendJson(writer);
             }
             writer.endArray();
-            executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, out.toString());
+            executeAction(
+                    ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, out.toString());
         } catch (IOException e) {
+            assert false;
             executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
-            
         }
     }
 
