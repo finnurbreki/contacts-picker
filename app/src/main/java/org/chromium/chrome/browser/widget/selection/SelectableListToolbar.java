@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.StringRes;
 import android.support.v4.view.GravityCompat;
@@ -41,7 +40,8 @@ import org.chromium.chrome.browser.toolbar.ActionModeController;
 import org.chromium.chrome.browser.toolbar.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.browser.util.FeatureUtilities;
-//import org.chromium.chrome.browser.vr_shell.VrShellDelegate;
+//import org.chromium.chrome.browser.vr.VrModeObserver;
+//import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.widget.NumberRollView;
 import org.chromium.chrome.browser.widget.TintedDrawable;
 import org.chromium.chrome.browser.widget.TintedImageButton;
@@ -64,7 +64,7 @@ import javax.annotation.Nullable;
  */
 public class SelectableListToolbar<E>
         extends Toolbar implements SelectionObserver<E>, OnClickListener, OnEditorActionListener,
-                                   DisplayStyleObserver /*, VrShellDelegate.VrModeObserver */ {
+                                   DisplayStyleObserver /*, VrModeObserver */ {
     /**
      * A delegate that handles searching the list of selectable items associated with this toolbar.
      */
@@ -92,15 +92,15 @@ public class SelectableListToolbar<E>
 
     protected boolean mIsSelectionEnabled;
     protected SelectionDelegate<E> mSelectionDelegate;
-    protected boolean mIsSearching;
 
+    private boolean mIsSearching;
     private boolean mHasSearchView;
     private LinearLayout mSearchView;
     private EditText mSearchText;
     private EditText mSearchEditText;
     private TintedImageButton mClearTextButton;
     private SearchDelegate mSearchDelegate;
-    private boolean mSelectableListHasItems;
+    private boolean mSearchEnabled;
     private boolean mIsVrEnabled = false;
     private boolean mUpdateStatusBarColor;
 
@@ -155,7 +155,7 @@ public class SelectableListToolbar<E>
         if (mSelectionDelegate != null) mSelectionDelegate.removeObserver(this);
         UiUtils.hideKeyboard(mSearchEditText);
         // Not needed for Android Studio project.
-        // VrShellDelegate.unregisterVrModeObserver(this);
+        // VrModuleProvider.unregisterVrModeObserver(this);
     }
 
     /**
@@ -183,9 +183,10 @@ public class SelectableListToolbar<E>
         mDrawerLayout = drawerLayout;
         mNormalGroupResId = normalGroupResId;
         mSelectedGroupResId = selectedGroupResId;
-        mUpdateStatusBarColor = updateStatusBarColor
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && !UiUtils.isSystemUiThemingDisabled();
+        // TODO(twellington): Setting the status bar color crashes on Nokia devices. Re-enable
+        // after a Nokia test device is procured and the crash can be debugged.
+        // See https://crbug.com/880694.
+        mUpdateStatusBarColor = false;
 
         mSelectionDelegate = delegate;
         mSelectionDelegate.addObserver(this);
@@ -231,8 +232,8 @@ public class SelectableListToolbar<E>
         }
 
         // Not needed for Android Studio project.
-        // VrShellDelegate.registerVrModeObserver(this);
-        // if (VrShellDelegate.isInVr()) onEnterVr();
+        // VrModuleProvider.registerVrModeObserver(this);
+        // if (VrModuleProvider.getDelegate().isInVr()) onEnterVr();
 
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
@@ -482,12 +483,12 @@ public class SelectableListToolbar<E>
     }
 
     /**
-     * Called when the data in the selectable list this toolbar is associated with changes.
-     * @param numItems The number of items in the selectable list.
+     * Called to enable/disable search menu button.
+     * @param searchEnabled Whether the search button should be enabled.
      */
-    protected void onDataChanged(int numItems) {
+    public void setSearchEnabled(boolean searchEnabled) {
         if (mHasSearchView) {
-            mSelectableListHasItems = numItems != 0;
+            mSearchEnabled = searchEnabled;
             updateSearchMenuItem();
         }
     }
@@ -650,8 +651,8 @@ public class SelectableListToolbar<E>
         if (!mHasSearchView) return;
         MenuItem searchMenuItem = getMenu().findItem(mSearchMenuItemId);
         if (searchMenuItem != null) {
-            searchMenuItem.setVisible(mSelectableListHasItems && !mIsSelectionEnabled
-                    && !mIsSearching && !mIsVrEnabled);
+            searchMenuItem.setVisible(
+                    mSearchEnabled && !mIsSelectionEnabled && !mIsSearching && !mIsVrEnabled);
         }
     }
 
@@ -730,7 +731,7 @@ public class SelectableListToolbar<E>
             }
 
             /* Not needed for Android Studio project.
-            if (VrShellDelegate.isInVr()) {
+            if (VrModuleProvider.getDelegate().isInVr()) {
                 // There seems to be a bug with the support library, only on Android N, where the
                 // toast showing the title shows up every time the info menu item is clicked or
                 // scrolled on, even if its long press handler is overridden. VR on N doesn't
