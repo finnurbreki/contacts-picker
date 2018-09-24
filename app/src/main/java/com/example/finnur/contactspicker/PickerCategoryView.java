@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.JsonWriter;
 import android.view.LayoutInflater;
@@ -262,7 +261,8 @@ public class PickerCategoryView extends RelativeLayout
         } else if (id == R.id.action) {
             if (mSelectAllMode) {
                 mPreviousSelection = mSelectionDelegate.getSelectedItems();
-                mSelectionDelegate.setSelectedItems(mPickerAdapter.getAllContacts());
+                mSelectionDelegate.setSelectedItems(
+                        new HashSet<ContactDetails>(mPickerAdapter.getAllContacts()));
                 mActionButton.setImageResource(R.drawable.ic_undo);
                 mActionButton.setContentDescription(mLabelUndo);
             } else {

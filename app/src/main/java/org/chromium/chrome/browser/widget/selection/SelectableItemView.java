@@ -60,9 +60,6 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
         if (mIconView != null) {
             mIconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
             mIconView.setTint(getDefaultIconTint());
-            if (!FeatureUtilities.isChromeModernDesignEnabled()) {
-                mIconView.getBackground().setAlpha(0);
-            }
         }
     }
 
@@ -92,10 +89,6 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
             mIconView.getBackground().setLevel(mDefaultLevel);
             mIconView.setImageDrawable(mIconDrawable);
             mIconView.setTint(getDefaultIconTint());
-        }
-
-        if (!FeatureUtilities.isChromeModernDesignEnabled()) {
-            mIconView.getBackground().setAlpha(isChecked() ? 255 : 0);
         }
     }
 
