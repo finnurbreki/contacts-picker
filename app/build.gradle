@@ -4,8 +4,12 @@ android {
     compileSdkVersion 24
     defaultConfig {
         applicationId "com.example.finnur.contactspicker"
-        minSdkVersion 21
+
+        // Matches Chrome (src/chrome/android/BUILD.gn).
+        minSdkVersion 16
         targetSdkVersion 22
+
+        vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

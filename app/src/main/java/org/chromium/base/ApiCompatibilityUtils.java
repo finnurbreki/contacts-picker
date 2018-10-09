@@ -13,14 +13,17 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -29,9 +32,11 @@ import android.os.PowerManager;
 import android.os.Process;
 import android.os.StatFs;
 import android.os.StrictMode;
-//import android.os.UserManager;
+// import android.os.UserManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+// import android.support.v4.widget.ImageViewCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -39,6 +44,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodSubtype;
 // import android.view.textclassifier.TextClassifier;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -471,6 +477,19 @@ public class ApiCompatibilityUtils {
         }
     }
 
+    /*
+    public static void setImageTintList(
+            @NonNull ImageView view, @Nullable ColorStateList tintList) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            // Work around broken workaround in ImageViewCompat, see https://crbug.com/891609#c3.
+            if (tintList != null && view.getImageTintMode() == null) {
+                view.setImageTintMode(PorterDuff.Mode.SRC_IN);
+            }
+        }
+        ImageViewCompat.setImageTintList(view, tintList);
+    }
+    */
+
     /**
      * @see android.content.res.Resources#getDrawableForDensity(int id, int density).
      */
@@ -720,6 +739,54 @@ public class ApiCompatibilityUtils {
     public static void setAccessibilityTraversalBefore(View view, int viewFocusedAfter) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             view.setAccessibilityTraversalBefore(viewFocusedAfter);
+        }
+    }
+
+    /**
+     * Creates regular LayerDrawable on Android L+. On older versions creates a helper class that
+     * fixes issues around {@link LayerDrawable#mutate()}. See https://crbug.com/890317 for details.
+     * @param layers A list of drawables to use as layers in this new drawable.
+     */
+    public static LayerDrawable createLayerDrawable(@NonNull Drawable[] layers) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            return new LayerDrawableCompat(layers);
+        }
+        return new LayerDrawable(layers);
+    }
+
+    private static class LayerDrawableCompat extends LayerDrawable {
+        private boolean mMutated;
+
+        LayerDrawableCompat(@NonNull Drawable[] layers) {
+            super(layers);
+        }
+
+        @Override
+        public Drawable mutate() {
+            // LayerDrawable in Android K loses bounds of layers, so this method works around that.
+            if (mMutated) {
+                // This object has already been mutated and shouldn't have any shared state.
+                return this;
+            }
+
+            // Save bounds before mutation.
+            Rect[] oldBounds = new Rect[getNumberOfLayers()];
+            for (int i = 0; i < getNumberOfLayers(); i++) {
+                oldBounds[i] = getDrawable(i).getBounds();
+            }
+
+            Drawable superResult = super.mutate();
+            if (superResult != this) {
+                // Unexpected, LayerDrawable.mutate() always returns this.
+                return superResult;
+            }
+
+            // Restore the saved bounds.
+            for (int i = 0; i < getNumberOfLayers(); i++) {
+                getDrawable(i).setBounds(oldBounds[i]);
+            }
+            mMutated = true;
+            return this;
         }
     }
 }

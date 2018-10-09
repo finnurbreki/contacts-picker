@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.finnur.contactspicker">
 
-    <!-- Matches Chrome (src/chrome/android/BUILD.gn) -->
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23" />
-
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application

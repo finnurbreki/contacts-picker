@@ -16,6 +16,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.content.res.AppCompatResources;
+// import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -40,7 +41,6 @@ import com.example.finnur.contactspicker.R;
 import org.chromium.chrome.browser.toolbar.ActionModeController;
 import org.chromium.chrome.browser.toolbar.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.util.ColorUtils;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 //import org.chromium.chrome.browser.vr.VrModeObserver;
 //import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.widget.NumberRollView;
@@ -318,6 +318,7 @@ public class SelectableListToolbar<E>
         mNumberRollView = (NumberRollView) findViewById(R.id.selection_mode_number);
         // Commented out for Android Studio project.
         // mNumberRollView.setString(R.plurals.selected_items);
+        //mNumberRollView.setStringForZero(R.string.select_items);
     }
 
     @Override
@@ -604,6 +605,7 @@ public class SelectableListToolbar<E>
     protected void showSelectionView(List<E> selectedItems, boolean wasSelectionEnabled) {
         getMenu().setGroupVisible(mNormalGroupResId, false);
         getMenu().setGroupVisible(mSelectedGroupResId, true);
+        getMenu().setGroupEnabled(mSelectedGroupResId, !selectedItems.isEmpty());
         if (mHasSearchView) mSearchView.setVisibility(View.GONE);
 
         setNavigationButton(NAVIGATION_BUTTON_SELECTION_BACK);

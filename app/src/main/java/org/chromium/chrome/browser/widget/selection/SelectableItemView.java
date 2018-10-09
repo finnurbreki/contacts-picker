@@ -11,11 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
+// import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import com.example.finnur.contactspicker.R;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.chrome.browser.widget.TintedDrawable;
 import org.chromium.chrome.browser.widget.TintedImageView;
 
