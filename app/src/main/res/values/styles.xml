@@ -40,6 +40,11 @@
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
 
+    <style name="BlackHeadline" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_list</item>
+        <item name="android:textSize">@dimen/headline_size</item>
+    </style>
+
     <style name="BlackHeadline2" parent="RobotoMediumStyle">
         <item name="android:textColor">@color/black_alpha_87</item>
         <item name="android:textSize">@dimen/headline_size_medium</item>
@@ -119,6 +124,11 @@
     <style name="RobotoMediumStyle">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="WhiteHeadline" tools:ignore="UnusedResources">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/headline_size</item>
     </style>
 
     <style name="WhiteHeadline2" parent="RobotoMediumStyle">
