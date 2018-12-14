@@ -53,6 +53,13 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     public void onSelectionStateChange(List<ContactDetails> selectedItems) {
         super.onSelectionStateChange(selectedItems);
 
+        // Override the behavior of the toolbar to hide the close button when nothing is selected.
+        // TODO(finnur): Figure out why the click handler goes away...
+        if (selectedItems.size() == 0) {
+            setNavigationButton(NAVIGATION_BUTTON_BACK);
+            showCloseButton();
+        }
+
         Button done = (Button) findViewById(R.id.done);
         done.setEnabled(selectedItems.size() > 0);
     }

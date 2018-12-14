@@ -7,16 +7,16 @@ package com.example.finnur.contactspicker;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 //import org.chromium.chrome.R;
+import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 
@@ -46,7 +46,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private ImageView mImage;
 
     // The control that signifies the contact has been selected.
-    private ImageView mSelectedView;
+    private TintedImageView mCheckmark;
 
     // The display name of the contact.
     public TextView mDisplayName;
@@ -60,6 +60,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     public ContactView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+
+        setSelectionOnLongClick(false);
     }
 
     @Override
@@ -67,9 +69,10 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         super.onFinishInflate();
 
         mImage = (ImageView) findViewById(R.id.image);
+        mCheckmark = (TintedImageView) findViewById(R.id.checkmark);
+        mCheckmark.setImageDrawable(mCheckDrawable);
         mDisplayName = (TextView) findViewById(R.id.name);
         mDetailsView = (TextView) findViewById(R.id.details);
-        mSelectedView = (ImageView) findViewById(R.id.selected);
     }
 
     @Override
@@ -83,9 +86,24 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     }
 
     @Override
+    public boolean onLongClick(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(mContactDetails.getContactDetailsAsString(true))
+                .setCancelable(true)
+                .setTitle(mDisplayName.getText())
+                .setIcon(mImage.getDrawable());
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        return true;
+    }
+
+    @Override
     public void setChecked(boolean checked) {
         super.setChecked(checked);
         updateSelectionState();
+
+        if (checked) mCheckDrawable.start();
     }
 
     @Override
@@ -129,7 +147,10 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
         String displayName = contactDetails.getDisplayName();
         mDisplayName.setText(displayName);
-        mDetailsView.setText(contactDetails.getContactDetailsAsString());
+        String details = contactDetails.getContactDetailsAsString(/*longVersion=*/ false);
+        mDetailsView.setText(details);
+        mDetailsView.setVisibility(details.isEmpty() ? View.GONE : View.VISIBLE);
+
         if (icon == null) {
             icon = mCategoryView.getIconGenerator().generateIconForText(
                     contactDetails.getDisplayNameAbbreviation(), 2);
@@ -162,7 +183,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         mImage.setImageBitmap(null);
         mDisplayName.setText("");
         mDetailsView.setText("");
-        mSelectedView.setVisibility(View.GONE);
+        mCheckmark.setVisibility(View.GONE);
     }
 
     /**
@@ -171,14 +192,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private void updateSelectionState() {
         boolean checked = super.isChecked();
 
-        if (checked) {
-            Resources resources = mContext.getResources();
-            setBackgroundColor(ApiCompatibilityUtils.getColor(
-                    resources, R.color.selectable_list_item_highlight_color));
-        } else {
-            setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        mSelectedView.setVisibility(checked ? View.VISIBLE : View.GONE);
+        mCheckmark.setVisibility(checked ? View.VISIBLE : View.GONE);
+        mImage.setVisibility(checked ? View.GONE : View.VISIBLE);
     }
 }
