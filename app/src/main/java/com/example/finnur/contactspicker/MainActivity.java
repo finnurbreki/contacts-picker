@@ -37,14 +37,14 @@ public class MainActivity extends AppCompatActivity {
                 ContactsPickerListener listener = new ContactsPickerListener() {
                     @Override
                     public void onContactsPickerUserAction(
-                            ContactsPickerListener.ContactsPickerAction action, String contacts) {
+                            @ContactsPickerAction int action, String contacts) {
                         switch (action) {
-                            case CONTACTS_SELECTED:
+                            case ContactsPickerAction.CONTACTS_SELECTED:
                                 if (contacts != null) {
                                     Log.e("***** ", "**** Contact JSON: " + contacts);
                                 }
                                 break;
-                            case CANCEL:
+                            case ContactsPickerAction.CANCEL:
                                 Log.e("***** ", "**** Cancelled");
                                 break;
                         }

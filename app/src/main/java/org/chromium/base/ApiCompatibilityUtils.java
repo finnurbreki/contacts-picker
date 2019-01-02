@@ -37,7 +37,7 @@ import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-// import android.support.v4.widget.ImageViewCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -46,6 +46,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodSubtype;
 // import android.view.textclassifier.TextClassifier;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.io.File;
@@ -108,6 +109,17 @@ public class ApiCompatibilityUtils {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("UTF-8 encoding not available.", e);
         }
+    }
+
+    public static void setImageTintList(
+            @NonNull ImageView view, @Nullable ColorStateList tintList) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            // Work around broken workaround in ImageViewCompat, see https://crbug.com/891609#c3.
+            if (tintList != null && view.getImageTintMode() == null) {
+                view.setImageTintMode(PorterDuff.Mode.SRC_IN);
+            }
+        }
+        ImageViewCompat.setImageTintList(view, tintList);
     }
 
     /**
@@ -322,6 +334,17 @@ public class ApiCompatibilityUtils {
         if (!isElevationSupported()) return false;
 
         view.setElevation(elevationValue);
+        return true;
+    }
+
+    /**
+     * Set elevation if supported.
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static boolean setElevation(PopupWindow window, float elevationValue) {
+        if (!isElevationSupported()) return false;
+
+        window.setElevation(elevationValue);
         return true;
     }
 
