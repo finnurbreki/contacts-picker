@@ -61,7 +61,7 @@ public class PickerCategoryView
     private SelectableListLayout<ContactDetails> mSelectableListLayout;
 
     // Our activity.
-    private /*ChromeActivity*/ Activity mActivity;
+    private /*Chrome*/Activity mActivity;
 
     // The callback to notify the listener of decisions reached in the picker.
     private ContactsPickerListener mListener;
@@ -301,6 +301,10 @@ public class PickerCategoryView
 
     public /*BitmapCache*/ LruCache<String, Bitmap> getIconCache() {
         return mBitmapCache;
+    }
+
+    public /*Chrome*/Activity getActivity() {
+        return mActivity;
     }
 
     public void setTopView(TopView topView) {

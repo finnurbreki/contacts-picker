@@ -66,7 +66,8 @@ public abstract class SelectableItemViewBase<E> extends FrameLayout
 
     /**
      * Controls whether selection happens during onLongClick or onClick.
-     * @param selectOnLongClick True if selection should happen on longClick, false otherwise.
+     * @param selectOnLongClick True if selection should happen on longClick, false if selection
+     *                          should happen on click instead.
      */
     public void setSelectionOnLongClick(boolean selectOnLongClick) {
         mSelectOnLongClick = selectOnLongClick;

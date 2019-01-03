@@ -16,6 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 //import org.chromium.chrome.R;
+//import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
+//import org.chromium.chrome.browser.modaldialog.ModalDialogProperties;
+//import org.chromium.chrome.browser.modaldialog.ModalDialogView;
+//import org.chromium.chrome.browser.modelutil.PropertyModel;
 import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
@@ -54,6 +58,12 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     // The contact details for the contact.
     public TextView mDetailsView;
 
+    // The dialog manager to use to show contact details.
+    // private ModalDialogManager mManager;
+
+    // The property model listing the contents of the contact details dialog.
+    // private PropertyModel mModel;
+
     /**
      * Constructor for inflating from XML.
      */
@@ -87,14 +97,38 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
     @Override
     public boolean onLongClick(View view) {
+        /* Chrome has a special dialog system to make sure dialogs work in VR.
+           For Android Studio the good old fashioned dialogs work just fine.
+        mManager = mCategoryView.getActivity().getModalDialogManager();
+        ModalDialogView.Controller controller = new ModalDialogView.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                mManager.dismissDialog(model, buttonType);
+                mModel = null;
+                mManager = null;
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        };
+        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                         .with(ModalDialogProperties.CONTROLLER, controller)
+                         .with(ModalDialogProperties.TITLE, mDisplayName.getText().toString())
+                         .with(ModalDialogProperties.MESSAGE,
+                                 mContactDetails.getContactDetailsAsString(true, null))
+                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
+                                 R.string.close)
+                         .build();
+        mModel.set(ModalDialogProperties.TITLE_ICON, mImage.getDrawable());
+        mManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
+        */
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setMessage(mContactDetails.getContactDetailsAsString(true))
+        builder.setMessage(mContactDetails.getContactDetailsAsString(true, null))
                 .setCancelable(true)
                 .setTitle(mDisplayName.getText())
                 .setIcon(mImage.getDrawable());
         AlertDialog alert = builder.create();
         alert.show();
-
         return true;
     }
 
@@ -147,7 +181,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
         String displayName = contactDetails.getDisplayName();
         mDisplayName.setText(displayName);
-        String details = contactDetails.getContactDetailsAsString(/*longVersion=*/ false);
+        String details = contactDetails.getContactDetailsAsString(/*longVersion=*/ false, null);
         mDetailsView.setText(details);
         mDetailsView.setVisibility(details.isEmpty() ? View.GONE : View.VISIBLE);
 
