@@ -99,7 +99,8 @@ public class ContactDetails implements Comparable<ContactDetails> {
                 }
                 builder.append(email);
                 if (!longVersion && mEmails.size() > 1) {
-                    /* This project doesn't have the fancy plural constants, hard code it instead.
+                    /* The Android Studio project doesn't have the fancy plural constants, hard
+                       code the string instead.
                     builder.append(" ");
                     builder.append(resources.getQuantityString(
                             R.plurals.contacts_picker_more_details, (mEmails.size() - 1)));
@@ -116,7 +117,8 @@ public class ContactDetails implements Comparable<ContactDetails> {
                 }
                 builder.append(phoneNumber);
                 if (!longVersion && mPhoneNumbers.size() > 1) {
-                    /* This project doesn't have the fancy plural constants, hard code it instead.
+                    /* The Android Studio project doesn't have the fancy plural constants, hard
+                       code the string instead.
                     builder.append(" ");
                     builder.append(resources.getQuantityString(
                             R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1)));

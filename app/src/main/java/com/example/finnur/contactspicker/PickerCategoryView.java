@@ -291,23 +291,23 @@ public class PickerCategoryView
 
     // Simple getters and setters:
 
-    public SelectionDelegate<ContactDetails> getSelectionDelegate() {
+    SelectionDelegate<ContactDetails> getSelectionDelegate() {
         return mSelectionDelegate;
     }
 
-    public RoundedIconGenerator getIconGenerator() {
+    RoundedIconGenerator getIconGenerator() {
         return mIconGenerator;
     }
 
-    public /*BitmapCache*/ LruCache<String, Bitmap> getIconCache() {
+    /*BitmapCache*/ LruCache<String, Bitmap> getIconCache() {
         return mBitmapCache;
     }
 
-    public /*Chrome*/Activity getActivity() {
+    /*Chrome*/Activity getActivity() {
         return mActivity;
     }
 
-    public void setTopView(TopView topView) {
+    void setTopView(TopView topView) {
         mTopView = topView;
     }
 

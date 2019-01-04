@@ -299,7 +299,7 @@ public class SelectableListToolbar<E>
             public void afterTextChanged(Editable s) {}
         });
 
-        mClearTextButton = (ImageButton) findViewById(R.id.clear_text_button);
+        mClearTextButton = findViewById(R.id.clear_text_button);
         mClearTextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

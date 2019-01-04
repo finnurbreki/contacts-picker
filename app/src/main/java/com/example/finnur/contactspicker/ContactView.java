@@ -78,21 +78,16 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImage = (ImageView) findViewById(R.id.image);
-        mCheckmark = (TintedImageView) findViewById(R.id.checkmark);
+        mImage = findViewById(R.id.image);
+        mCheckmark = findViewById(R.id.checkmark);
         mCheckmark.setImageDrawable(mCheckDrawable);
-        mDisplayName = (TextView) findViewById(R.id.name);
-        mDetailsView = (TextView) findViewById(R.id.details);
+        mDisplayName = findViewById(R.id.name);
+        mDetailsView = findViewById(R.id.details);
     }
 
     @Override
     public void onClick() {
-        // Clicks are disabled until initialize() has been called.
-        if (mContactDetails == null) return;
-
-        // The SelectableItemView expects long press to be the selection event, but this class wants
-        // that to happen on click instead.
-        onLongClick(this);
+        // Selection is handled in onClick for the parent class.
     }
 
     @Override
@@ -181,7 +176,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
 
         String displayName = contactDetails.getDisplayName();
         mDisplayName.setText(displayName);
-        String details = contactDetails.getContactDetailsAsString(/*longVersion=*/ false, null);
+        String details = contactDetails.getContactDetailsAsString(
+                /*longVersion=*/false, mContext.getResources());
         mDetailsView.setText(details);
         mDetailsView.setVisibility(details.isEmpty() ? View.GONE : View.VISIBLE);
 
