@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 //import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 //import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -48,9 +47,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     // contact's name.
     private ImageView mImage;
 
-    // The control that signifies the contact has been selected.
-    private TintedImageView mCheckmark;
-
     // The display name of the contact.
     public TextView mDisplayName;
 
@@ -78,8 +74,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         super.onFinishInflate();
 
         mImage = findViewById(R.id.image);
-        mCheckmark = findViewById(R.id.checkmark);
-        mCheckmark.setImageDrawable(mCheckDrawable);
         mDisplayName = findViewById(R.id.name);
         mDetailsView = findViewById(R.id.details);
     }
@@ -213,7 +207,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         mImage.setImageBitmap(null);
         mDisplayName.setText("");
         mDetailsView.setText("");
-        mCheckmark.setVisibility(View.GONE);
     }
 
     /**
@@ -222,7 +215,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private void updateSelectionState() {
         boolean checked = super.isChecked();
 
-        mCheckmark.setVisibility(checked ? View.VISIBLE : View.GONE);
+        mIconView.setVisibility(checked ? View.VISIBLE : View.GONE);
         mImage.setVisibility(checked ? View.GONE : View.VISIBLE);
     }
 }

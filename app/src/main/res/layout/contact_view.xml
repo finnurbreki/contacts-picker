@@ -22,16 +22,15 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/icon_view"
             android:layout_width="48dp"
             android:layout_height="48dp"
             tools:ignore="ContentDescription" />
 
-        <org.chromium.chrome.browser.widget.TintedImageView
-            android:id="@+id/checkmark"
+        <ImageView
+            android:id="@+id/image"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:visibility="gone"
             tools:ignore="ContentDescription" />
 
         <LinearLayout
