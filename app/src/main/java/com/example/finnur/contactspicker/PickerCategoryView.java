@@ -4,16 +4,16 @@
 
 package com.example.finnur.contactspicker;
 
-import android.app.Activity;  // Android Studio only.
+import android.app.Activity;  // Android Studio project only.
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.graphics.Bitmap;  // Android Studio only.
-import android.os.AsyncTask;  // Android Studio only.
+import android.graphics.Bitmap;  // Android Studio project only.
+import android.os.AsyncTask;  // Android Studio project only.
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.JsonWriter;
-import android.util.LruCache;  // Android Studio only.
+import android.util.LruCache;  // Android Studio project only.
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -72,6 +72,7 @@ public class PickerCategoryView
     // The RecyclerView showing the images.
     private RecyclerView mRecyclerView;
 
+    // The view at the top (showing the explanation and Select All checkbox).
     private TopView mTopView;
 
     // The {@link PickerAdapter} for the RecyclerView.
@@ -94,7 +95,7 @@ public class PickerCategoryView
     private ImageView mSearchButton;
 
     // Keeps track of the set of last selected contacts in the UI.
-    private Set<ContactDetails> mPreviousSelection;
+    Set<ContactDetails> mPreviousSelection;
 
     // The Done text button that confirms the selection choice.
     private Button mDoneButton;
@@ -135,8 +136,8 @@ public class PickerCategoryView
         int titleId = multiSelectionAllowed ? R.string.contacts_picker_select_contacts
                                             : R.string.contacts_picker_select_contact;
         mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, null, 0, 0,
-                R.color.modern_primary_color, null, false, false);
+                R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, null, 0, 0, null,
+                false, false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
 
@@ -249,7 +250,7 @@ public class PickerCategoryView
         }
 
         boolean allSelected = selectedItems.size() == mPickerAdapter.getItemCount() - 1;
-        mTopView.syncCheckbox(allSelected);
+        mTopView.updateSelectAllCheckbox(allSelected);
     }
 
     // RecyclerView.RecyclerListener:
@@ -260,7 +261,11 @@ public class PickerCategoryView
         bitmapHolder.cancelIconRetrieval();
     }
 
-    public void toggleSelectAll(boolean allSelected) {
+    /**
+     * Toggles the Select All checkbox.
+     * @param allSelected Whether the Select All checkbox should be become checked.
+     */
+    void toggleSelectAll(boolean allSelected) {
         if (allSelected) {
             mPreviousSelection = mSelectionDelegate.getSelectedItems();
             mSelectionDelegate.setSelectedItems(
@@ -309,6 +314,10 @@ public class PickerCategoryView
 
     void setTopView(TopView topView) {
         mTopView = topView;
+    }
+
+    boolean multiSelectionAllowed() {
+        return mMultiSelectionAllowed;
     }
 
     /**

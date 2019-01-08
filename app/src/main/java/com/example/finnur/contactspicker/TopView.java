@@ -1,41 +1,36 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.example.finnur.contactspicker;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.view.menu.MenuView;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Checkable;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 //import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.selection.SelectableItemView;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
-
-import java.util.List;
 
 /**
- * A container class for a view showing a contact in the Contacts Picker.
+ * A container class for the Disclaimer and Select All functionality (and both associated labels).
  */
 public class TopView extends LinearLayout implements CompoundButton.OnCheckedChangeListener {
+    // The container box for the checkbox and its label and contact count.
+    private View mCheckboxContainer;
+
+    // The Select All checkbox.
     private CheckBox mSelectAllBox;
+
+    // The label showing how many contacts were found.
     private TextView mContactCount;
+
+    // Our parent PickerCategoryView.
     private PickerCategoryView mCategoryView;
+
+    // Whether to temporarily ignore clicks on the checkbox.
     private boolean mIgnoreCheck;
 
     public TopView(Context context, AttributeSet attrs) {
@@ -46,17 +41,23 @@ public class TopView extends LinearLayout implements CompoundButton.OnCheckedCha
         mCategoryView = categoryView;
     }
 
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        //if (multiSelectionAllowed) {
-        mSelectAllBox = (CheckBox) findViewById(R.id.select_all_checkbox);
-        mSelectAllBox.setOnCheckedChangeListener(this);
+        mCheckboxContainer = findViewById(R.id.container);
+        // TODO(finnur): Plumb through the necessary data to show which website will be receiving
+        //               the contact data.
+        mSelectAllBox = findViewById(R.id.select_all_checkbox);
+        mContactCount = findViewById(R.id.contact_count);
+    }
 
-        mContactCount = (TextView) findViewById(R.id.contact_count);
-        //} else {
-        //    mSelectAllBox.setVisibility(GONE);
-        //}
+    public void updateViewVisibility() {
+        if (mCategoryView.multiSelectionAllowed()) {
+            mSelectAllBox.setOnCheckedChangeListener(this);
+        } else {
+            mCheckboxContainer.setVisibility(GONE);
+        }
     }
 
     public void updateContactCount(int count) {
@@ -71,7 +72,7 @@ public class TopView extends LinearLayout implements CompoundButton.OnCheckedCha
      * Updates the state of the checkbox to reflect whether everything is selected.
      * @param allSelected
      */
-    public void syncCheckbox(boolean allSelected) {
+    public void updateSelectAllCheckbox(boolean allSelected) {
         mIgnoreCheck = true;
         mSelectAllBox.setChecked(allSelected);
         mIgnoreCheck = false;

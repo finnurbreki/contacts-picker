@@ -23,7 +23,6 @@ import java.util.Locale;
  */
 public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         implements ContactsFetcherWorkerTask.ContactsRetrievedCallback {
-
     /**
      * A ViewHolder for the top-most view in the RecyclerView. The view it contains has a
      * checkbox and some multi-line text that goes with it, so clicks on either text line
@@ -44,6 +43,10 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             mItemView.toggle();
         }
     }
+
+    // The two types of views supported.
+    static final int SELECT_ALL_CHECKBOX = 0;
+    static final int CONTACT_DETAILS = 1;
 
     // The category view to use to show the contacts.
     private PickerCategoryView mCategoryView;
@@ -144,25 +147,25 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (mSearchMode) return 1;
-        if (position == 0) return 0;
-        return 1;
+        if (position == 0 && !mSearchMode) return SELECT_ALL_CHECKBOX;
+        return CONTACT_DETAILS;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case 0: {
+            case SELECT_ALL_CHECKBOX: {
                 mTopView = (TopView) LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.top_view, parent, false);
+                                   .inflate(R.layout.top_view, parent, false);
                 mTopView.setCategoryView(mCategoryView);
+                mTopView.updateViewVisibility();
                 mCategoryView.setTopView(mTopView);
                 if (mContactDetails != null) mTopView.updateContactCount(mContactDetails.size());
                 return new TopViewHolder(mTopView);
             }
-            case 1: {
+            case CONTACT_DETAILS: {
                 ContactView itemView = (ContactView) LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.contact_view, parent, false);
+                                               .inflate(R.layout.contact_view, parent, false);
                 itemView.setCategoryView(mCategoryView);
                 return new ContactViewHolder(itemView, mCategoryView, mContentResolver);
             }
@@ -173,14 +176,15 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (holder.getItemViewType()) {
-            case 0:
-                int i = 0;
+            case SELECT_ALL_CHECKBOX:
+                // There's no need to bind the Select All view.
                 return;
-            case 1:
+            case CONTACT_DETAILS:
                 ContactViewHolder contactHolder = (ContactViewHolder) holder;
                 ContactDetails contact;
                 if (!mSearchMode || mSearchResults == null) {
-                    // Subtract one because the first view is the Select All checkbox.
+                    // Subtract one because the first view is the Select All checkbox when not in
+                    // search mode.
                     contact = mContactDetails.get(position - (mSearchMode ? 0 : 1));
                 } else {
                     Integer index = mSearchResults.get(position);

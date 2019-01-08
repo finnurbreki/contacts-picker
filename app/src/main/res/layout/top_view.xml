@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
@@ -16,14 +16,13 @@
     android:layout_marginBottom="2dp"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
-    android:clickable="false"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/explanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The contacts you select below will be shared with the website, yadda yadda yadda" />
+        android:text="@string/disclaimer_sharing_contact_details" />
 
     <LinearLayout
         android:id="@+id/container"
@@ -32,7 +31,7 @@
         android:orientation="horizontal"
         android:layout_marginTop="16dp">
 
-        <!-- needed in Chromium? -->
+        <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
         <android.support.v7.widget.AppCompatCheckBox
             app:buttonTint="@color/modern_blue_600"
             android:id="@+id/select_all_checkbox"
@@ -52,19 +51,15 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:paddingTop="5dp"
-                android:layout_toEndOf="@id/image"
-                android:text="All contacts"
-                style="@style/BlackTitle1" />
+                android:text="@string/contacts_picker_all_contacts"
+                style="@style/TextAppearance.BlackTitle1" />
 
             <TextView
                 android:id="@+id/contact_count"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:paddingBottom="5dp"
-                android:layout_below="@id/name"
-                android:layout_alignStart="@id/name"
-                android:text="1093"
-                style="@style/BlackBody"/>
+                style="@style/TextAppearance.BlackBody"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

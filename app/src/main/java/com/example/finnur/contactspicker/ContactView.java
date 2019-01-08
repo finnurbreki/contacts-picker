@@ -9,20 +9,19 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog; // Android Studio project only.
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 //import org.chromium.chrome.R;
-//import org.chromium.chrome.browser.modaldialog.ModalDialogManager;
-//import org.chromium.chrome.browser.modaldialog.ModalDialogProperties;
-//import org.chromium.chrome.browser.modaldialog.ModalDialogView;
-//import org.chromium.chrome.browser.modelutil.PropertyModel;
 import org.chromium.chrome.browser.widget.TintedImageView;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+//import org.chromium.ui.modaldialog.ModalDialogManager;
+//import org.chromium.ui.modaldialog.ModalDialogProperties;
+//import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
@@ -88,6 +87,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     @Override
     public void onClick() {
         // Selection is handled in onClick for the parent class.
+        assert false;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         /* Chrome has a special dialog system to make sure dialogs work in VR.
            For Android Studio the good old fashioned dialogs work just fine.
         mManager = mCategoryView.getActivity().getModalDialogManager();
-        ModalDialogView.Controller controller = new ModalDialogView.Controller() {
+        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 mManager.dismissDialog(model, buttonType);
