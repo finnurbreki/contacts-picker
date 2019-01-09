@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+
 //import org.chromium.chrome.R;
 
 /**
@@ -62,7 +64,7 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
     }
 
     public void updateContactCount(int count) {
-        mContactCount.setText(String.valueOf(count));
+        mContactCount.setText(NumberFormat.getInstance().format(count));
     }
 
     public void toggle() {

@@ -125,8 +125,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     public void setChecked(boolean checked) {
         super.setChecked(checked);
         updateSelectionState();
-
-        if (checked) mCheckDrawable.start();
     }
 
     @Override
@@ -215,6 +213,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     private void updateSelectionState() {
         boolean checked = super.isChecked();
 
+        // TODO(finnur): Review accessibility (with and without selection) and update the
+        //               tools:ignore tag in the xml for these two image views, if needed.
         mIconView.setVisibility(checked ? View.VISIBLE : View.GONE);
         mImage.setVisibility(checked ? View.GONE : View.VISIBLE);
     }
