@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 //import org.chromium.chrome.R;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 /**
  * A container class for the Disclaimer and Select All functionality (and both associated labels).
  */
-public class TopView extends LinearLayout implements CompoundButton.OnCheckedChangeListener {
+public class TopView extends RelativeLayout implements CompoundButton.OnCheckedChangeListener {
     // The container box for the checkbox and its label and contact count.
     private View mCheckboxContainer;
 

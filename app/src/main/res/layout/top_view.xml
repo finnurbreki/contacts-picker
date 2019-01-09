@@ -3,13 +3,9 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<view class="com.example.finnur.contactspicker.TopView"
+<com.example.finnur.contactspicker.TopView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
@@ -24,12 +20,12 @@
         android:layout_height="wrap_content"
         android:text="@string/disclaimer_sharing_contact_details" />
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="50dp">
 
         <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
         <android.support.v7.widget.AppCompatCheckBox
@@ -43,7 +39,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="23dp"
+            android:layout_marginStart="64dp"
             android:orientation="vertical">
 
             <TextView
@@ -61,7 +57,6 @@
                 android:paddingBottom="5dp"
                 style="@style/TextAppearance.BlackBody"/>
         </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+    </FrameLayout>
 
-</view>
+</com.example.finnur.contactspicker.TopView>
