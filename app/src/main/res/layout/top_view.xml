@@ -12,20 +12,20 @@
     android:layout_marginBottom="2dp"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
-    android:orientation="vertical">
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/explanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="@string/disclaimer_sharing_contact_details" />
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="50dp">
+        android:layout_below="@id/explanation">
 
         <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
         <android.support.v7.widget.AppCompatCheckBox
@@ -33,30 +33,27 @@
             android:id="@+id/select_all_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="9dp"
-            android:layout_marginTop="11dp" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/all_contacts"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@id/select_all_checkbox"
+            android:text="@string/contacts_picker_all_contacts"
+            style="@style/TextAppearance.BlackTitle1" />
 
-            <TextView
-                android:id="@+id/all_contacts"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingTop="5dp"
-                android:text="@string/contacts_picker_all_contacts"
-                style="@style/TextAppearance.BlackTitle1" />
-
-            <TextView
-                android:id="@+id/contact_count"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingBottom="5dp"
-                style="@style/TextAppearance.BlackBody"/>
-        </LinearLayout>
-    </FrameLayout>
+        <TextView
+            android:id="@+id/contact_count"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_toRightOf="@id/select_all_checkbox"
+            android:layout_below="@id/all_contacts"
+            style="@style/TextAppearance.BlackBody"/>
+    </RelativeLayout>
 
 </com.example.finnur.contactspicker.TopView>
