@@ -52,9 +52,9 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
         // TODO(finnur): Plumb through the necessary data to show which website will be receiving
         //               the contact data.
         mSelectAllBox = findViewById(R.id.checkbox);
-        mContactCount = findViewById(R.id.details);
+        mContactCount = findViewById(R.id.checkbox_details);
 
-        TextView title = findViewById(R.id.title);
+        TextView title = findViewById(R.id.checkbox_title);
         title.setText(R.string.contacts_picker_all_contacts);
     }
 

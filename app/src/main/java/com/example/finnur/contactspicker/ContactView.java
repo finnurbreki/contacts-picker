@@ -69,8 +69,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mDisplayName = findViewById(R.id.name);
-        mDetailsView = findViewById(R.id.details);
+        mDisplayName = findViewById(R.id.title);
+        mDetailsView = findViewById(R.id.description);
     }
 
     @Override

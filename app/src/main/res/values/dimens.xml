@@ -12,6 +12,9 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="headline_size">22sp</dimen>
     <dimen name="headline_size_medium">20sp</dimen>
+    <dimen name="list_item_default_margin">16dp</dimen>
+    <dimen name="list_item_end_icon_width">56dp</dimen>
+    <dimen name="list_item_min_height">64dp</dimen>
     <dimen name="list_item_start_icon_right_margin">20dp</dimen>
     <dimen name="list_item_start_icon_width">36dp</dimen>
     <dimen name="modern_toolbar_background_size">36dp</dimen>

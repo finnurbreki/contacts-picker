@@ -26,14 +26,14 @@
             android:layout_marginTop="8dp" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/checkbox_title"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_toEndOf="@id/checkbox"
             style="@style/TextAppearance.BlackTitle1" />
 
         <TextView
-            android:id="@+id/details"
+            android:id="@+id/checkbox_details"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_toEndOf="@id/checkbox"
