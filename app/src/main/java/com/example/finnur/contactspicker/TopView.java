@@ -58,8 +58,8 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
         title.setText(R.string.contacts_picker_all_contacts);
     }
 
-    public void updateViewVisibility() {
-        if (mCategoryView.multiSelectionAllowed()) {
+    public void updateCheckboxVisibility(boolean visible) {
+        if (visible) {
             mSelectAllBox.setOnCheckedChangeListener(this);
         } else {
             mCheckboxContainer.setVisibility(GONE);

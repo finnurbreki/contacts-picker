@@ -28,9 +28,6 @@ import java.util.List;
  * A container class for a view showing a contact in the Contacts Picker.
  */
 public class ContactView extends SelectableItemView<ContactDetails> {
-    // The length of the fade in animation (in ms).
-    private static final int IMAGE_FADE_IN_DURATION = 150;
-
     // Our context.
     private Context mContext;
 
