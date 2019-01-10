@@ -7,38 +7,33 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
-        android:id="@+id/container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/explanation">
+    <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
+    <android.support.v7.widget.AppCompatCheckBox
+        app:buttonTint="@color/modern_blue_600"
+        android:id="@+id/checkbox"
+        style="@style/ListItemStartIcon" />
 
-        <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
-        <android.support.v7.widget.AppCompatCheckBox
-            app:buttonTint="@color/modern_blue_600"
-            android:id="@+id/checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical" >
 
         <TextView
             android:id="@+id/checkbox_title"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_toEndOf="@id/checkbox"
-            style="@style/TextAppearance.BlackTitle1" />
+            android:layout_width="match_parent"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.BlackTitle1" />
 
         <TextView
             android:id="@+id/checkbox_details"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_toEndOf="@id/checkbox"
-            android:layout_below="@id/title"
-            style="@style/TextAppearance.BlackBody"/>
-    </RelativeLayout>
-
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.BlackBody" />
+    </LinearLayout>
 </merge>
