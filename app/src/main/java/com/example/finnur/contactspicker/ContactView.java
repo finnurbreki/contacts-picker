@@ -7,12 +7,12 @@ package com.example.finnur.contactspicker;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog; // Android Studio project only.
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 //import org.chromium.chrome.R;
@@ -43,10 +43,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     // The details of the contact shown.
     private ContactDetails mContactDetails;
 
-    // The image view containing the profile image of the contact, or the abbreviated letters of the
-    // contact's name.
-    private ImageView mImage;
-
     // The display name of the contact.
     public TextView mDisplayName;
 
@@ -73,7 +69,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImage = findViewById(R.id.image);
         mDisplayName = findViewById(R.id.name);
         mDetailsView = findViewById(R.id.details);
     }
@@ -108,23 +103,17 @@ public class ContactView extends SelectableItemView<ContactDetails> {
                          .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
                                  R.string.close)
                          .build();
-        mModel.set(ModalDialogProperties.TITLE_ICON, mImage.getDrawable());
+        mModel.set(ModalDialogProperties.TITLE_ICON, getIconDrawable());
         mManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         */
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage(mContactDetails.getContactDetailsAsString(true, null))
                 .setCancelable(true)
                 .setTitle(mDisplayName.getText())
-                .setIcon(mImage.getDrawable());
+                .setIcon(getIconDrawable());
         AlertDialog alert = builder.create();
         alert.show();
         return true;
-    }
-
-    @Override
-    public void setChecked(boolean checked) {
-        super.setChecked(checked);
-        updateSelectionState();
     }
 
     @Override
@@ -139,8 +128,6 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         boolean selected = selectedItems.contains(mContactDetails);
         boolean checked = super.isChecked();
         if (selected != checked) super.toggle();
-
-        updateSelectionState();
     }
 
     /**
@@ -176,12 +163,10 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         if (icon == null) {
             icon = mCategoryView.getIconGenerator().generateIconForText(
                     contactDetails.getDisplayNameAbbreviation());
-            mImage.setImageBitmap(icon);
+            setIconDrawable(new BitmapDrawable(getResources(), icon));
         } else {
             setIconBitmap(icon);
         }
-
-        updateSelectionState();
     }
 
     /**
@@ -192,9 +177,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         Resources resources = mContext.getResources();
         RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(resources, icon);
         drawable.setCircular(true);
-        mImage.setImageDrawable(drawable);
-        mImage.setAlpha(0.0f);
-        mImage.animate().alpha(1.0f).setDuration(IMAGE_FADE_IN_DURATION).start();
+        setIconDrawable(drawable);
     }
 
     /**
@@ -202,20 +185,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
      * re-used.
      */
     private void resetTile() {
-        mImage.setImageBitmap(null);
+        setIconDrawable(null);
         mDisplayName.setText("");
         mDetailsView.setText("");
-    }
-
-    /**
-     * Updates the selection controls for this view.
-     */
-    private void updateSelectionState() {
-        boolean checked = super.isChecked();
-
-        // TODO(finnur): Review accessibility (with and without selection) and update the
-        //               tools:ignore tag in the xml for these two image views, if needed.
-        mIconView.setVisibility(checked ? View.VISIBLE : View.GONE);
-        mImage.setVisibility(checked ? View.GONE : View.VISIBLE);
     }
 }
