@@ -45,12 +45,12 @@ import java.util.Set;
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView
-        extends RelativeLayout implements View.OnClickListener, RecyclerView.RecyclerListener,
-                                          SelectionDelegate.SelectionObserver<ContactDetails>,
-                                          SelectableListToolbar.SearchDelegate {
+public class PickerCategoryView extends RelativeLayout
+        implements View.OnClickListener, RecyclerView.RecyclerListener,
+                   SelectionDelegate.SelectionObserver<ContactDetails>,
+                   SelectableListToolbar.SearchDelegate, TopView.SelectAllToggleCallback {
     // Constants for the RoundedIconGenerator.
-    private static final int ICON_SIZE_DP = 28;
+    private static final int ICON_SIZE_DP = 36;
     private static final int ICON_CORNER_RADIUS_DP = 20;
     private static final int ICON_TEXT_SIZE_DP = 12;
 
@@ -102,9 +102,6 @@ public class PickerCategoryView
 
     // Whether the picker is in multi-selection mode.
     private boolean mMultiSelectionAllowed;
-
-    // The MIME types requested.
-    private List<String> mMimeTypes;
 
     /**
      * @param multiSelectionAllowed Whether the contacts picker should allow multiple items to be
@@ -168,18 +165,15 @@ public class PickerCategoryView
      * Initializes the PickerCategoryView object.
      * @param dialog The dialog showing us.
      * @param listener The listener who should be notified of actions.
-     * @param mimeTypes A list of mime types to show in the dialog.
      */
-    public void initialize(
-            ContactsPickerDialog dialog, ContactsPickerListener listener, List<String> mimeTypes) {
+    public void initialize(ContactsPickerDialog dialog, ContactsPickerListener listener) {
         mDialog = dialog;
         mListener = listener;
-        mMimeTypes = new ArrayList<>(mimeTypes);
 
         mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
+                executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, null);
             }
         });
 
@@ -261,22 +255,21 @@ public class PickerCategoryView
         bitmapHolder.cancelIconRetrieval();
     }
 
-    /**
-     * Toggles the Select All checkbox.
-     * @param allSelected Whether the Select All checkbox should be become checked.
-     */
-    void toggleSelectAll(boolean allSelected) {
+    // TopView.SelectAllToggleCallback:
+
+    @Override
+    public void onSelectAllToggled(boolean allSelected) {
         if (allSelected) {
             mPreviousSelection = mSelectionDelegate.getSelectedItems();
             mSelectionDelegate.setSelectedItems(
                     new HashSet<ContactDetails>(mPickerAdapter.getAllContacts()));
             mListener.onContactsPickerUserAction(
-                    ContactsPickerListener.ContactsPickerAction.SELECT_ALL, null);
+                    ContactsPickerListener.ContactsPickerAction.SELECT_ALL, null, null);
         } else {
             mSelectionDelegate.setSelectedItems(new HashSet<ContactDetails>());
             mPreviousSelection = null;
             mListener.onContactsPickerUserAction(
-                    ContactsPickerListener.ContactsPickerAction.UNDO_SELECT_ALL, null);
+                    ContactsPickerListener.ContactsPickerAction.UNDO_SELECT_ALL, null, null);
         }
     }
 
@@ -290,7 +283,7 @@ public class PickerCategoryView
         } else if (id == R.id.search) {
             onStartSearch();
         } else {
-            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
+            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, null);
         }
     }
 
@@ -329,18 +322,22 @@ public class PickerCategoryView
 
         StringWriter out = new StringWriter();
         final JsonWriter writer = new JsonWriter(out);
+        List<ContactsPickerListener.Contact> contacts =
+                new ArrayList<ContactsPickerListener.Contact>();
 
         try {
             writer.beginArray();
             for (ContactDetails contactDetails : selectedContacts) {
                 contactDetails.appendJson(writer);
+                contacts.add(new ContactsPickerListener.Contact(contactDetails.getDisplayNames(),
+                        contactDetails.getEmails(), contactDetails.getPhoneNumbers()));
             }
             writer.endArray();
-            executeAction(
-                    ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, out.toString());
+            executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED,
+                    out.toString(), contacts);
         } catch (IOException e) {
             assert false;
-            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null);
+            executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, null);
         }
     }
 
@@ -349,9 +346,9 @@ public class PickerCategoryView
      * @param action The action taken.
      * @param contacts The contacts that were selected (if any).
      */
-    private void executeAction(
-            @ContactsPickerListener.ContactsPickerAction int action, String contacts) {
-        mListener.onContactsPickerUserAction(action, contacts);
+    private void executeAction(@ContactsPickerListener.ContactsPickerAction int action,
+            String contactsJson, List<ContactsPickerListener.Contact> contacts) {
+        mListener.onContactsPickerUserAction(action, contactsJson, contacts);
         mDialog.dismiss();
         UiUtils.onContactsPickerDismissed();
     }

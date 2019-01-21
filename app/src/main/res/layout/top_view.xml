@@ -5,6 +5,7 @@
 
 <com.example.finnur.contactspicker.TopView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -15,8 +16,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="12dp"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/disclaimer_sharing_contact_details" />
+        android:layout_marginEnd="16dp" />
 
     <LinearLayout
         android:id="@+id/content"

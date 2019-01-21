@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.VisibleForTesting;
-import org.chromium.chrome.browser.widget.displaystyle.VerticalDisplayStyle;
 //import org.chromium.base.task.AsyncTask;
 //import org.chromium.chrome.R;
 
@@ -49,7 +48,7 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
     }
 
     /**
-     * The vertical dimension groups.
+     * The types of views supported.
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.SELECT_ALL_CHECKBOX, ViewType.CONTACT_DETAILS})
@@ -106,7 +105,6 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
      */
     public void setSearchMode(boolean searchMode) {
         mSearchMode = searchMode;
-        notifyDataSetChanged();
     }
 
     /**
@@ -167,7 +165,7 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             case ViewType.SELECT_ALL_CHECKBOX: {
                 mTopView = (TopView) LayoutInflater.from(parent.getContext())
                                    .inflate(R.layout.top_view, parent, false);
-                mTopView.setCategoryView(mCategoryView);
+                mTopView.registerSelectAllCallback(mCategoryView);
                 mTopView.updateCheckboxVisibility(mCategoryView.multiSelectionAllowed());
                 mCategoryView.setTopView(mTopView);
                 if (mContactDetails != null) mTopView.updateContactCount(mContactDetails.size());

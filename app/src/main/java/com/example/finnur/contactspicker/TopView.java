@@ -9,18 +9,28 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.NumberFormat;
-
 //import org.chromium.chrome.R;
+
+import java.text.NumberFormat;
 
 /**
  * A container class for the Disclaimer and Select All functionality (and both associated labels).
  */
 public class TopView extends RelativeLayout implements CompoundButton.OnCheckedChangeListener {
+    /**
+     * An interface for communicating when the Select All checkbox is toggled.
+     */
+    public interface SelectAllToggleCallback {
+        /**
+         * Called when the Select All checkbox is toggled.
+         * @param allSelected Whether the Select All checkbox is checked.
+         */
+        void onSelectAllToggled(boolean allSelected);
+    }
+
     // The container box for the checkbox and its label and contact count.
     private View mCheckboxContainer;
 
@@ -30,18 +40,20 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
     // The label showing how many contacts were found.
     private TextView mContactCount;
 
-    // Our parent PickerCategoryView.
-    private PickerCategoryView mCategoryView;
+    // The callback to use when notifying that the Select All checkbox was toggled.
+    private SelectAllToggleCallback mSelectAllCallback;
 
     // Whether to temporarily ignore clicks on the checkbox.
     private boolean mIgnoreCheck;
 
+    // The explanation string (explaining what is shared and with what site).
+    private String mSiteString;
+
     public TopView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public void setCategoryView(PickerCategoryView categoryView) {
-        mCategoryView = categoryView;
+        // TODO(finnur): Plumb through the necessary data to show which website will be receiving
+        //               the contact data.
+        mSiteString = context.getString(R.string.disclaimer_sharing_contact_details, "foo.com");
     }
 
     @Override
@@ -56,6 +68,13 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
 
         TextView title = findViewById(R.id.checkbox_title);
         title.setText(R.string.contacts_picker_all_contacts);
+
+        TextView explanation = findViewById(R.id.explanation);
+        explanation.setText(mSiteString);
+    }
+
+    public void registerSelectAllCallback(SelectAllToggleCallback callback) {
+        mSelectAllCallback = callback;
     }
 
     public void updateCheckboxVisibility(boolean visible) {
@@ -86,6 +105,6 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (!mIgnoreCheck) mCategoryView.toggleSelectAll(mSelectAllBox.isChecked());
+        if (!mIgnoreCheck) mSelectAllCallback.onSelectAllToggled(mSelectAllBox.isChecked());
     }
 }
