@@ -60,9 +60,7 @@ public class TopView extends RelativeLayout implements CompoundButton.OnCheckedC
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mCheckboxContainer = findViewById(R.id.container);
-        // TODO(finnur): Plumb through the necessary data to show which website will be receiving
-        //               the contact data.
+        mCheckboxContainer = findViewById(R.id.content);
         mSelectAllBox = findViewById(R.id.checkbox);
         mContactCount = findViewById(R.id.checkbox_details);
 

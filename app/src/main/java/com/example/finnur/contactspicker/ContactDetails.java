@@ -11,6 +11,7 @@ import android.util.JsonWriter;
 // import org.chromium.chrome.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,8 +41,9 @@ public class ContactDetails implements Comparable<ContactDetails> {
     public ContactDetails(
             String id, String displayName, List<String> emails, List<String> phoneNumbers) {
         mDisplayName = displayName;
-        mEmails = emails;
-        mPhoneNumbers = phoneNumbers;
+        mEmails = emails != null ? new ArrayList<String>(emails) : new ArrayList<String>();
+        mPhoneNumbers = phoneNumbers != null ? new ArrayList<String>(phoneNumbers)
+                                             : new ArrayList<String>();
         mId = id;
     }
 
@@ -96,40 +98,36 @@ public class ContactDetails implements Comparable<ContactDetails> {
     public String getContactDetailsAsString(boolean longVersion, @Nullable Resources resources) {
         int count = 0;
         StringBuilder builder = new StringBuilder();
-        if (mEmails != null) {
-            for (String email : mEmails) {
-                if (count++ > 0) {
-                    builder.append("\n");
-                }
-                builder.append(email);
-                if (!longVersion && mEmails.size() > 1) {
-                    /* The Android Studio project doesn't have the fancy plural constants, hard
-                       code the string instead.
-                    builder.append(" ");
-                    builder.append(resources.getQuantityString(
-                            R.plurals.contacts_picker_more_details, (mEmails.size() - 1)));
-                    */
-                    builder.append(" (+" + (mEmails.size() - 1) + " more)");
-                    break;
-                }
+        for (String email : mEmails) {
+            if (count++ > 0) {
+                builder.append("\n");
+            }
+            builder.append(email);
+            if (!longVersion && mEmails.size() > 1) {
+                /* The Android Studio project doesn't have the fancy plural constants, hard
+                   code the string instead.
+                builder.append(" ");
+                builder.append(resources.getQuantityString(
+                        R.plurals.contacts_picker_more_details, (mEmails.size() - 1)));
+                */
+                builder.append(" (+" + (mEmails.size() - 1) + " more)");
+                break;
             }
         }
-        if (mPhoneNumbers != null) {
-            for (String phoneNumber : mPhoneNumbers) {
-                if (count++ > 0) {
-                    builder.append("\n");
-                }
-                builder.append(phoneNumber);
-                if (!longVersion && mPhoneNumbers.size() > 1) {
-                    /* The Android Studio project doesn't have the fancy plural constants, hard
-                       code the string instead.
-                    builder.append(" ");
-                    builder.append(resources.getQuantityString(
-                            R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1)));
-                    */
-                    builder.append(" (+" + (mPhoneNumbers.size() - 1) + " more)");
-                    break;
-                }
+        for (String phoneNumber : mPhoneNumbers) {
+            if (count++ > 0) {
+                builder.append("\n");
+            }
+            builder.append(phoneNumber);
+            if (!longVersion && mPhoneNumbers.size() > 1) {
+                /* The Android Studio project doesn't have the fancy plural constants, hard
+                   code the string instead.
+                builder.append(" ");
+                builder.append(resources.getQuantityString(
+                        R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1)));
+                */
+                builder.append(" (+" + (mPhoneNumbers.size() - 1) + " more)");
+                break;
             }
         }
 
