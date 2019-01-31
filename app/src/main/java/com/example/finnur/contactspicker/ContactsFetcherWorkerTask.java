@@ -155,7 +155,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<Void, Void, ArrayList<ContactD
             String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
             String name = cursor.getString(
                     cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-            contacts.add(new ContactDetails(id, name, emailMap.get(id), phoneMap.get(id)));
+            List<String> email = mIncludeEmails ? emailMap.get(id) : null;
+            List<String> tel = mIncludeTel ? phoneMap.get(id) : null;
+            if (mIncludeNames || email != null || tel != null)
+                contacts.add(new ContactDetails(id, name, email, tel));
         } while (cursor.moveToNext());
 
         cursor.close();
