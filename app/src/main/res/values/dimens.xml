@@ -8,6 +8,10 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="clear_text_button_end_padding">8dp</dimen>
     <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
+    <item name="default_pressed_alpha" format="float" type="dimen">0.10</item>
+    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.10</item>
+    <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
     <item name="disabled_text_alpha" format="float" type="dimen">0.38</item>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="headline_size">22sp</dimen>

@@ -29,6 +29,7 @@
         <item name="android:textStyle">bold</item>
     </style>
     <!-- This style is overridden downstream to set accent_font_medium as the font family. -->
+    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
     <style name="TextAppearance.ButtonMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
 
     <!-- Black Text Styles -->

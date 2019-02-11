@@ -14,10 +14,11 @@
     <string name="app_name">Contact Picker</string>
     <string name="close">Close</string>
     <string name="contacts_picker_all_contacts">All contacts</string>
-    <string name="disclaimer_sharing_contact_details">The contacts you select below will be shared with the website %1$s.</string>
+    <string name="contacts_picker_no_contacts_found">No contacts found</string>
     <string name="contacts_picker_search">Search your contacts</string>
     <string name="contacts_picker_select_contact">Select a contact</string>
     <string name="contacts_picker_select_contacts">Select contacts</string>
+    <string name="disclaimer_sharing_contact_details">The contacts you select below will be shared with the website %1$s.</string>
     <string name="done">Done</string>
     <string name="hide_info">Hide Info</string>
     <string name="search">Search</string>
