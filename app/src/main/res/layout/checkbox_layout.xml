@@ -7,9 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Not needed in Chromium, but defaults in Android Studio are wrong color. -->
-    <android.support.v7.widget.AppCompatCheckBox
-        app:buttonTint="@color/modern_blue_600"
+    <CheckBox
         android:id="@+id/checkbox"
         style="@style/ListItemStartIcon" />
 

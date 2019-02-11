@@ -8,4 +8,3 @@
         android:color="@color/default_text_color_secondary" android:state_enabled="false"/>
     <item android:color="@color/default_text_color_secondary" />
 </selector>
-                                                                                                    

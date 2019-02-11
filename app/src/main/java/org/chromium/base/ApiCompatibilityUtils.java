@@ -114,17 +114,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    public static void setImageTintList(
-            @NonNull ImageView view, @Nullable ColorStateList tintList) {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-            // Work around broken workaround in ImageViewCompat, see https://crbug.com/891609#c3.
-            if (tintList != null && view.getImageTintMode() == null) {
-                view.setImageTintMode(PorterDuff.Mode.SRC_IN);
-            }
-        }
-        ImageViewCompat.setImageTintList(view, tintList);
-    }
-
     /**
      * Returns true if view's layout direction is right-to-left.
      *
@@ -504,7 +493,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    /*
     public static void setImageTintList(
             @NonNull ImageView view, @Nullable ColorStateList tintList) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
@@ -515,7 +503,6 @@ public class ApiCompatibilityUtils {
         }
         ImageViewCompat.setImageTintList(view, tintList);
     }
-    */
 
     /**
      * @see android.content.res.Resources#getDrawableForDensity(int id, int density).

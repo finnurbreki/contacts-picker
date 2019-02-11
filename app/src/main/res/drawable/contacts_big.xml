@@ -4,12 +4,12 @@
      found in the LICENSE file. -->
 
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
-    android:width="64dp"
-    android:height="64dp"
-    android:viewportWidth="24.0"
-    android:viewportHeight="24.0">
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:targetApi="21"
+        android:width="64dp"
+        android:height="64dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
     <path
         android:pathData="M0 0h24v24H0zm0 0h24v24H0zm0 0h24v24H0z" />
     <path

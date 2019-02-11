@@ -27,7 +27,7 @@
         android:textAppearance="@style/TextAppearance.BlackTitle1"
         android:textColorHint="@color/search_box_hint"/>
 
-    <org.chromium.chrome.browser.widget.TintedImageButton
+    <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/clear_text_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -38,5 +38,5 @@
         android:scaleType="center"
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:visibility="invisible"
-        app:chrometint="@color/dark_mode_tint" />
+        app:tint="@color/dark_mode_tint" />
 </LinearLayout>

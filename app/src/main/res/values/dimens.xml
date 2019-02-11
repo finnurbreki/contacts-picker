@@ -6,12 +6,14 @@
     <dimen name="action_bar_shadow_height">10dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="button_compat_corner_radius">4dp</dimen>
     <dimen name="clear_text_button_end_padding">8dp</dimen>
     <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
     <item name="default_pressed_alpha" format="float" type="dimen">0.10</item>
     <item name="default_focused_hovered_alpha" format="float" type="dimen">0.10</item>
     <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
     <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
+    <dimen name="default_ripple_background_border_size">0dp</dimen>
     <item name="disabled_text_alpha" format="float" type="dimen">0.38</item>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="headline_size">22sp</dimen>
