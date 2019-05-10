@@ -125,6 +125,9 @@
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="TextAppearance.Headline.Inverse" parent="TextAppearance.WhiteHeadline" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
 
     <!-- Modern List Item -->
     <style name="ListItemContainer">
@@ -165,6 +168,21 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Base.Theme.Chromium" parent="Theme.AppCompat.Light" />
+    <style name="Base.Theme.Chromium.Fullscreen">
+        <!-- With ActionBar but not window title -->
+        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
+        <item name="windowActionBar">true</item>
+        <item name="colorPrimary">@color/light_active_color</item>
+        <item name="colorAccent">@color/light_active_color</item>
+    </style>
+    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen">
+        <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
+        <!--suppress NewApi: crbug.com/856861-->
+        <item name="android:navigationBarDividerColor">@color/bottom_system_nav_divider_color</item>
+        <!--suppress NewApi: crbug.com/856861-->
+        <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
+    </style>
 
     <!-- Picker Dialog dependencies -->
     <style name="ButtonCompatBase">
