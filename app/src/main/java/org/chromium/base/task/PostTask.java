@@ -45,6 +45,8 @@ public class PostTask {
     }
 
     /**
+     * Creates and returns a SequencedTaskRunner. SequencedTaskRunners automatically destroy
+     * themselves, so the destroy() function is not required to be called.
      * @param traits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
@@ -235,7 +237,7 @@ public class PostTask {
     }
 
     @CalledByNative
-    private static void onNativeTaskSchedulerReady() {
+    private static void onNativeSchedulerReady() {
         synchronized (sLock) {
             for (TaskRunner taskRunner : sPreNativeTaskRunners) {
                 taskRunner.initNativeTaskRunner();
@@ -246,7 +248,7 @@ public class PostTask {
 
     // This is here to make C++ tests work.
     @CalledByNative
-    private static void onNativeTaskSchedulerShutdown() {
+    private static void onNativeSchedulerShutdown() {
         synchronized (sLock) {
             sPreNativeTaskRunners =
                     Collections.newSetFromMap(new WeakHashMap<TaskRunner, Boolean>());

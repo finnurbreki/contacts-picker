@@ -10,10 +10,8 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.graphics.Bitmap;  // Android Studio project only.
-import android.os.AsyncTask;  // Android Studio project only.
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.JsonWriter;
 import android.util.LruCache;  // Android Studio project only.
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +21,7 @@ import android.widget.RelativeLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.AsyncTask;
 // import org.chromium.chrome.R;
 // import org.chromium.chrome.browser.BitmapCache;
 // import org.chromium.chrome.browser.ChromeActivity;
@@ -210,6 +209,22 @@ public class PickerCategoryView extends RelativeLayout
         mToolbar.showSearchView();
     }
 
+    private void asynchronouslyUpdateNumberView(HashSet<ContactDetails> params) {
+        // Asynchronously toggle the selection, to let the current action run its course (the number
+        // roll view will otherwise show the wrong number).
+        new AsyncTask<HashSet<ContactDetails>>() {
+            @Override
+            protected HashSet<ContactDetails> doInBackground() {
+                return params;
+            }
+
+            @Override
+            protected void onPostExecute(HashSet<ContactDetails> result) {
+                mSelectionDelegate.setSelectedItems(result);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     // SelectableListToolbar.SearchDelegate:
 
     @Override
@@ -232,19 +247,7 @@ public class PickerCategoryView extends RelativeLayout
             selection.add(item);
         }
 
-        // Asynchronously toggle the selection, to let the current action run its course (the number
-        // roll view will otherwise show the wrong number).
-        new AsyncTask<HashSet<ContactDetails>, Void, HashSet<ContactDetails>>() {
-            @Override
-            protected HashSet<ContactDetails> doInBackground(HashSet<ContactDetails>... params) {
-              return params[0];
-            }
-
-            @Override
-            protected void onPostExecute(HashSet<ContactDetails> result) {
-                mSelectionDelegate.setSelectedItems(result);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selection);
+        asynchronouslyUpdateNumberView(selection);
     }
 
     @Override

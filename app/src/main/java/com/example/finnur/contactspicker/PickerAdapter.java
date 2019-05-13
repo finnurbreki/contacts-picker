@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.VisibleForTesting;
-//import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.AsyncTask;
 //import org.chromium.chrome.R;
 
 import java.lang.annotation.Retention;
@@ -100,7 +100,7 @@ public class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             mWorkerTask = new ContactsFetcherWorkerTask(mContentResolver, this,
                     mCategoryView.includeNames, mCategoryView.includeEmails,
                     mCategoryView.includeTel);
-            mWorkerTask.execute();
+            mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             mContactDetails = sTestContacts;
             notifyDataSetChanged();

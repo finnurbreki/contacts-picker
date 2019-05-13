@@ -7,10 +7,10 @@ package com.example.finnur.contactspicker;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * A worker task to retrieve images for contacts.
  */
-class ContactsFetcherWorkerTask extends AsyncTask<Void, Void, ArrayList<ContactDetails>> {
+class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
@@ -72,11 +72,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<Void, Void, ArrayList<ContactD
 
     /**
      * Fetches the details for all contacts (in a background thread).
-     * @param params Do not use.
      * @return The icon representing a contact.
      */
     @Override
-    protected ArrayList<ContactDetails> doInBackground(Void... params) {
+    protected ArrayList<ContactDetails> doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
