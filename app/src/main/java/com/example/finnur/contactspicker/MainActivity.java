@@ -42,7 +42,11 @@ public class MainActivity extends AppCompatActivity {
                         switch (action) {
                             case ContactsPickerAction.CONTACTS_SELECTED:
                                 for (Contact contact : contacts) {
-                                    Log.e("***** ", "**** Contact JSON found: " + contact.names.get(0));
+                                    String contactDetails = "";
+                                    if (contact.names != null && contact.names.size() > 0) contactDetails += "Name: " + contact.names.get(0) + " ";
+                                    if (contact.emails != null && contact.emails.size() > 0) contactDetails += "Email: " + contact.emails.get(0) + " ";
+                                    if (contact.tel != null && contact.tel.size() > 0) contactDetails += "Tel: " + contact.tel.get(0);
+                                    Log.e("***** ", "**** Contact JSON found: " + contactDetails);
                                 }
                                 break;
                             case ContactsPickerAction.CANCEL:

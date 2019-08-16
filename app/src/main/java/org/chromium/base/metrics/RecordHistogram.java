@@ -9,6 +9,7 @@ import android.text.format.DateUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,10 +65,12 @@ public class RecordHistogram {
      * @param sample sample to be recorded, either true or false
      */
     public static void recordBooleanHistogram(String name, boolean sample) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordBooleanHistogram(name, key, sample);
+        long result = RecordHistogramJni.get().recordBooleanHistogram(name, key, sample);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -80,10 +83,13 @@ public class RecordHistogram {
      *        lower than |boundary|
      */
     public static void recordEnumeratedHistogram(String name, int sample, int boundary) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordEnumeratedHistogram(name, key, sample, boundary);
+        long result =
+                RecordHistogramJni.get().recordEnumeratedHistogram(name, key, sample, boundary);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -127,10 +133,13 @@ public class RecordHistogram {
      */
     public static void recordCustomCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordCustomCountHistogram(name, key, sample, min, max, numBuckets);
+        long result = RecordHistogramJni.get().recordCustomCountHistogram(
+                name, key, sample, min, max, numBuckets);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -144,10 +153,13 @@ public class RecordHistogram {
      */
     public static void recordLinearCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordLinearCountHistogram(name, key, sample, min, max, numBuckets);
+        long result = RecordHistogramJni.get().recordLinearCountHistogram(
+                name, key, sample, min, max, numBuckets);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -157,10 +169,12 @@ public class RecordHistogram {
      * @param sample sample to be recorded, at least 0 and at most 100.
      */
     public static void recordPercentageHistogram(String name, int sample) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordEnumeratedHistogram(name, key, sample, 101);
+        long result = RecordHistogramJni.get().recordEnumeratedHistogram(name, key, sample, 101);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -170,10 +184,12 @@ public class RecordHistogram {
      *        values.
      */
     public static void recordSparseHistogram(String name, int sample) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
-        long result = nativeRecordSparseHistogram(name, key, sample);
+        long result = RecordHistogramJni.get().recordSparseHistogram(name, key, sample);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -260,6 +276,7 @@ public class RecordHistogram {
 
     private static void recordCustomTimesHistogramMilliseconds(
             String name, long duration, long min, long max, int numBuckets) {
+        /* Not needed for Android Studio project.
         if (sDisabledBy != null) return;
         long key = getCachedHistogramKey(name);
         // Note: Duration, min and max are clamped to int here because that's what's expected by
@@ -267,9 +284,10 @@ public class RecordHistogram {
         // the types returned by TimeUnit and System.currentTimeMillis() APIs, from which these
         // values come.
         assert max == clampToInt(max);
-        long result = nativeRecordCustomTimesHistogramMilliseconds(
+        long result = RecordHistogramJni.get().recordCustomTimesHistogramMilliseconds(
                 name, key, clampToInt(duration), clampToInt(min), clampToInt(max), numBuckets);
         if (result != key) sCache.put(name, result);
+        */
     }
 
     /**
@@ -279,7 +297,10 @@ public class RecordHistogram {
      */
     @VisibleForTesting
     public static int getHistogramValueCountForTesting(String name, int sample) {
-        return nativeGetHistogramValueCountForTesting(name, sample);
+        /* Not needed for Android Studio project.
+        return RecordHistogramJni.get().getHistogramValueCountForTesting(name, sample);
+        */
+        return 0;
     }
 
     /**
@@ -288,22 +309,24 @@ public class RecordHistogram {
      */
     @VisibleForTesting
     public static int getHistogramTotalCountForTesting(String name) {
-        return nativeGetHistogramTotalCountForTesting(name);
+        /* Not needed for Android Studio project.
+        return RecordHistogramJni.get().getHistogramTotalCountForTesting(name);
+        */
+        return 0;
     }
 
-    // Not relevant to Android Studio project:
-    private static long nativeRecordCustomTimesHistogramMilliseconds(
-            String name, long key, int duration, int min, int max, int numBuckets) { return 0; }
-
-    private static long nativeRecordBooleanHistogram(String name, long key, boolean sample) { return 0; }
-    private static long nativeRecordEnumeratedHistogram(
-            String name, long key, int sample, int boundary) { return 0; }
-    private static long nativeRecordCustomCountHistogram(
-            String name, long key, int sample, int min, int max, int numBuckets) { return 0; }
-    private static long nativeRecordLinearCountHistogram(
-            String name, long key, int sample, int min, int max, int numBuckets) { return 0; }
-    private static long nativeRecordSparseHistogram(String name, long key, int sample) { return 0; }
-
-    private static int nativeGetHistogramValueCountForTesting(String name, int sample) { return 0; }
-    private static int nativeGetHistogramTotalCountForTesting(String name) { return 0; }
+    @NativeMethods
+    public interface Natives {
+        long recordCustomTimesHistogramMilliseconds(
+                String name, long key, int duration, int min, int max, int numBuckets);
+        long recordBooleanHistogram(String name, long key, boolean sample);
+        long recordEnumeratedHistogram(String name, long key, int sample, int boundary);
+        long recordCustomCountHistogram(
+                String name, long key, int sample, int min, int max, int numBuckets);
+        long recordLinearCountHistogram(
+                String name, long key, int sample, int min, int max, int numBuckets);
+        long recordSparseHistogram(String name, long key, int sample);
+        int getHistogramValueCountForTesting(String name, int sample);
+        int getHistogramTotalCountForTesting(String name);
+    }
 }

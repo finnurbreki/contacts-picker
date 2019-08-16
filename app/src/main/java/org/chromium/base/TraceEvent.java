@@ -13,6 +13,7 @@ import android.util.Printer;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 /**
  * Java mirror of Chrome trace event API. See base/trace_event/trace_event.h.
  *
@@ -22,6 +23,9 @@ import org.chromium.base.annotations.MainDex;
  *   // code.
  * }
  * }</pre>
+ *
+ * The event name of the trace events must be a string literal or a |static final String| class
+ * member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  *
  * It is OK to use tracing before the native library has loaded, in a slightly restricted fashion.
  * @see EarlyTraceEvent for details.
@@ -54,7 +58,8 @@ public class TraceEvent implements AutoCloseable {
             if (sEnabled || earlyTracingActive) {
                 mCurrentTarget = getTraceEventName(line);
                 if (sEnabled) {
-                    nativeBeginToplevel(mCurrentTarget);
+                    // Not needed for Android Studio project.
+                    // TraceEventJni.get().beginToplevel(mCurrentTarget);
                 } else {
                     EarlyTraceEvent.begin(mCurrentTarget);
                 }
@@ -65,7 +70,8 @@ public class TraceEvent implements AutoCloseable {
             boolean earlyTracingActive = EarlyTraceEvent.isActive();
             if ((sEnabled || earlyTracingActive) && mCurrentTarget != null) {
                 if (sEnabled) {
-                    nativeEndToplevel(mCurrentTarget);
+                    // Not needed for Android Studio project.
+                    // TraceEventJni.get().endToplevel(mCurrentTarget);
                 } else {
                     EarlyTraceEvent.end(mCurrentTarget);
                 }
@@ -267,7 +273,8 @@ public class TraceEvent implements AutoCloseable {
      * Register an enabled observer, such that java traces are always enabled with native.
      */
     public static void registerNativeEnabledObserver() {
-        nativeRegisterEnabledObserver();
+        // Not needed for Android Studio project.
+        // TraceEventJni.get().registerEnabledObserver();
     }
 
     /**
@@ -311,11 +318,13 @@ public class TraceEvent implements AutoCloseable {
         if (enabled) {
             // Calls TraceEvent.setEnabled(true) via
             // TraceLog::EnabledStateObserver::OnTraceLogEnabled
-            nativeStartATrace();
+            // Not needed for Android Studio project.
+            // TraceEventJni.get().startATrace();
         } else {
             // Calls TraceEvent.setEnabled(false) via
             // TraceLog::EnabledStateObserver::OnTraceLogDisabled
-            nativeStopATrace();
+            // Not needed for Android Studio project.
+            // TraceEventJni.get().stopATrace();
         }
     }
 
@@ -333,7 +342,8 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      */
     public static void instant(String name) {
-        if (sEnabled) nativeInstant(name, null);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().instant(name, null);
     }
 
     /**
@@ -342,7 +352,8 @@ public class TraceEvent implements AutoCloseable {
      * @param arg  The arguments of the event.
      */
     public static void instant(String name, String arg) {
-        if (sEnabled) nativeInstant(name, arg);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().instant(name, arg);
     }
 
     /**
@@ -352,7 +363,8 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void startAsync(String name, long id) {
         EarlyTraceEvent.startAsync(name, id);
-        if (sEnabled) nativeStartAsync(name, id);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().startAsync(name, id);
     }
 
     /**
@@ -362,7 +374,8 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void finishAsync(String name, long id) {
         EarlyTraceEvent.finishAsync(name, id);
-        if (sEnabled) nativeFinishAsync(name, id);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().finishAsync(name, id);
     }
 
     /**
@@ -380,7 +393,8 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void begin(String name, String arg) {
         EarlyTraceEvent.begin(name);
-        if (sEnabled) nativeBegin(name, arg);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().begin(name, arg);
     }
 
     /**
@@ -398,18 +412,21 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void end(String name, String arg) {
         EarlyTraceEvent.end(name);
-        if (sEnabled) nativeEnd(name, arg);
+        // Not needed for Android Studio project.
+        // if (sEnabled) TraceEventJni.get().end(name, arg);
     }
 
-    // Not relevant to Android Studio project:
-    private static void nativeRegisterEnabledObserver() {}
-    private static void nativeStartATrace() {}
-    private static void nativeStopATrace() {}
-    private static void nativeInstant(String name, String arg) {}
-    private static void nativeBegin(String name, String arg) {}
-    private static void nativeEnd(String name, String arg) {}
-    private static void nativeBeginToplevel(String target) {}
-    private static void nativeEndToplevel(String target) {}
-    private static void nativeStartAsync(String name, long id) {}
-    private static void nativeFinishAsync(String name, long id) {}
+    @NativeMethods
+    interface Natives {
+        void registerEnabledObserver();
+        void startATrace();
+        void stopATrace();
+        void instant(String name, String arg);
+        void begin(String name, String arg);
+        void end(String name, String arg);
+        void beginToplevel(String target);
+        void endToplevel(String target);
+        void startAsync(String name, long id);
+        void finishAsync(String name, long id);
+    }
 }

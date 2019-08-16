@@ -24,5 +24,8 @@
     <string name="search">Search</string>
     <string name="select_all">Select all</string>
     <string name="show_info">Show Info</string>
+    <string name="top_view_email_filter_label">Email addresses</string>
+    <string name="top_view_names_filter_label">Names</string>
+    <string name="top_view_telephone_filter_label">Phone numbers</string>
     <string name="undo">Undo</string>
 </resources>

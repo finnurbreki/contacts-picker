@@ -8,7 +8,6 @@ import android.app.Activity;  // Android Studio project only.
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.graphics.Bitmap;  // Android Studio project only.
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +22,9 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.VisibleForTesting;
 import org.chromium.base.task.AsyncTask;
 // import org.chromium.chrome.R;
-// import org.chromium.chrome.browser.BitmapCache;
 // import org.chromium.chrome.browser.ChromeActivity;
-// import org.chromium.chrome.browser.ChromeApplication;
+// import org.chromium.chrome.browser.GlobalDiscardableReferencePool;
+// import org.chromium.chrome.browser.util.BitmapCache;
 import org.chromium.chrome.browser.util.ConversionUtils;
 import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
@@ -141,8 +140,6 @@ public class PickerCategoryView extends RelativeLayout
         mSelectableListLayout =
                 (SelectableListLayout<ContactDetails>) root.findViewById(R.id.selectable_list);
         mSelectableListLayout.initializeEmptyView(
-                VectorDrawableCompat.create(
-                        mActivity.getResources(), R.drawable.contacts_big, mActivity.getTheme()),
                 R.string.contacts_picker_no_contacts_found,
                 R.string.contacts_picker_no_contacts_found);
 
@@ -336,6 +333,28 @@ public class PickerCategoryView extends RelativeLayout
     }
 
     /**
+     * @param isIncluded Whether the property was requested by the API.
+     * @param isEnabled Whether the property was allowed to be shared by the user.
+     * @param selected The property values that are currently selected.
+     * @return The list of property values to share.
+     */
+    private List<String> getContactPropertyValues(
+            boolean isIncluded, boolean isEnabled, List<String> selected) {
+        if (!isIncluded) {
+            // The property wasn't requested in the API so return null.
+            return null;
+        }
+
+        if (!isEnabled) {
+            // The user doesn't want to share this property, so return an empty array.
+            return new ArrayList<String>();
+        }
+
+        // Share whatever was selected.
+        return selected;
+    }
+
+    /**
      * Notifies any listeners that one or more contacts have been selected.
      */
     private void notifyContactsSelected() {
@@ -347,9 +366,12 @@ public class PickerCategoryView extends RelativeLayout
 
         for (ContactDetails contactDetails : selectedContacts) {
             contacts.add(new ContactsPickerListener.Contact(
-                    includeNames ? contactDetails.getDisplayNames() : null,
-                    includeEmails ? contactDetails.getEmails() : null,
-                    includeTel ? contactDetails.getPhoneNumbers() : null));
+                    getContactPropertyValues(includeNames, PickerAdapter.includesNames(),
+                            contactDetails.getDisplayNames()),
+                    getContactPropertyValues(includeEmails, PickerAdapter.includesEmails(),
+                            contactDetails.getEmails()),
+                    getContactPropertyValues(includeTel, PickerAdapter.includesTelephones(),
+                            contactDetails.getPhoneNumbers())));
         }
         executeAction(ContactsPickerListener.ContactsPickerAction.CONTACTS_SELECTED, contacts);
     }
@@ -369,5 +391,10 @@ public class PickerCategoryView extends RelativeLayout
     @VisibleForTesting
     public SelectionDelegate<ContactDetails> getSelectionDelegateForTesting() {
         return mSelectionDelegate;
+    }
+
+    @VisibleForTesting
+    public TopView getTopViewForTesting() {
+        return mTopView;
     }
 }

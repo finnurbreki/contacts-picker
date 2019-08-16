@@ -89,43 +89,50 @@ public class ContactDetails implements Comparable<ContactDetails> {
      * separated by newline).
      * @param longVersion Whether to get all the details (for emails and phone numbers) or only what
      *                    will fit in the allotted space on the dialog.
+     * @param includeEmails Whether to include emails in the returned results.
+     * @param includeTels Whether to include telephones in the returned results.
      * @param resources The resources to use for fetching the string. Must be provided if
      *                  longVersion is false, otherwise it can be null.
      * @return A string containing all the contact details registered for this contact.
      */
-    public String getContactDetailsAsString(boolean longVersion, @Nullable Resources resources) {
+    public String getContactDetailsAsString(boolean longVersion, boolean includeEmails,
+            boolean includeTels, @Nullable Resources resources) {
         int count = 0;
         StringBuilder builder = new StringBuilder();
-        for (String email : mEmails) {
-            if (count++ > 0) {
-                builder.append("\n");
-            }
-            builder.append(email);
-            if (!longVersion && mEmails.size() > 1) {
-                /* The Android Studio project doesn't have the fancy plural constants, hard
-                   code the string instead.
-                builder.append(" ");
-                builder.append(resources.getQuantityString(
-                        R.plurals.contacts_picker_more_details, (mEmails.size() - 1)));
-                */
-                builder.append(" (+" + (mEmails.size() - 1) + " more)");
-                break;
+        if (includeEmails) {
+            for (String email : mEmails) {
+                if (count++ > 0) {
+                    builder.append("\n");
+                }
+                builder.append(email);
+                if (!longVersion && mEmails.size() > 1) {
+                    /* The Android Studio project doesn't have the fancy plural constants, hard
+                       code the string instead.
+                    builder.append(" ");
+                    builder.append(resources.getQuantityString(
+                            R.plurals.contacts_picker_more_details, (mEmails.size() - 1)));
+                    */
+                    builder.append(" (+" + (mEmails.size() - 1) + " more)");
+                    break;
+                }
             }
         }
-        for (String phoneNumber : mPhoneNumbers) {
-            if (count++ > 0) {
-                builder.append("\n");
-            }
-            builder.append(phoneNumber);
-            if (!longVersion && mPhoneNumbers.size() > 1) {
-                /* The Android Studio project doesn't have the fancy plural constants, hard
-                   code the string instead.
-                builder.append(" ");
-                builder.append(resources.getQuantityString(
-                        R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1)));
-                */
-                builder.append(" (+" + (mPhoneNumbers.size() - 1) + " more)");
-                break;
+        if (includeTels) {
+            for (String phoneNumber : mPhoneNumbers) {
+                if (count++ > 0) {
+                    builder.append("\n");
+                }
+                builder.append(phoneNumber);
+                if (!longVersion && mPhoneNumbers.size() > 1) {
+                    /* The Android Studio project doesn't have the fancy plural constants, hard
+                       code the string instead.
+                    builder.append(" ");
+                    builder.append(resources.getQuantityString(
+                            R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1)));
+                    */
+                    builder.append(" (+" + (mPhoneNumbers.size() - 1) + " more)");
+                    break;
+                }
             }
         }
 

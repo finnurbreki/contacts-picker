@@ -97,7 +97,9 @@ public class ContactView extends SelectableItemView<ContactDetails> {
                          .with(ModalDialogProperties.CONTROLLER, controller)
                          .with(ModalDialogProperties.TITLE, mContactDetails.getDisplayName())
                          .with(ModalDialogProperties.MESSAGE,
-                                 mContactDetails.getContactDetailsAsString(true, null))
+                                 mContactDetails.getContactDetailsAsString(true,
+                                         PickerAdapter.includesEmails(),
+                                         PickerAdapter.includesTelephones(), null))
                          .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mContext.getResources(),
                                  R.string.close)
                          .build();
@@ -105,7 +107,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         mManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         */
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setMessage(mContactDetails.getContactDetailsAsString(true, null))
+        builder.setMessage(mContactDetails.getContactDetailsAsString(true, PickerAdapter.includesEmails(), PickerAdapter.includesTelephones(), null))
                 .setCancelable(true)
                 .setTitle(mDisplayName.getText())
                 .setIcon(getIconDrawable());
@@ -155,7 +157,8 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         mDisplayName.setText(displayName);
 
         String details = contactDetails.getContactDetailsAsString(
-                /*longVersion=*/false, mContext.getResources());
+                /*longVersion=*/false, /*includeEmails=*/PickerAdapter.includesEmails(),
+                /*includeTels=*/PickerAdapter.includesTelephones(), mContext.getResources());
         mDetailsView.setText(details);
         mDetailsView.setVisibility(details.isEmpty() ? View.GONE : View.VISIBLE);
 

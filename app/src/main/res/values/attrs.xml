@@ -10,8 +10,21 @@
 
     <declare-styleable name="ButtonCompat">
         <attr name="buttonColor" format="color"/>
-        <attr name="rippleColor" format="color"/>
         <attr name="buttonRaised" format="boolean"/>
+        <attr name="rippleColor" format="color"/>
+        <attr name="verticalInset"/>
+    </declare-styleable>
+
+    <declare-styleable name="ChipView">
+        <attr name="chipColor" format="color"/>
+        <attr name="chipStyle" format="reference"/>
+        <attr name="cornerRadius" format="reference|dimension"/>
+        <attr name="iconWidth" format="reference|dimension"/>
+        <attr name="iconHeight" format="reference|dimension"/>
+        <attr name="primaryTextAppearance" format="reference"/>
+        <attr name="secondaryTextAppearance" format="reference"/>
+        <attr name="rippleColor"/>
+        <attr name="verticalInset"/>
     </declare-styleable>
 
     <declare-styleable name="TextViewWithCompoundDrawables">
@@ -20,5 +33,10 @@
         <!-- drawableTint wasn't added in Android until API level 23. -->
         <attr name="chromeDrawableTint" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="TextViewWithLeading">
+        <attr name="leading" format="reference|dimension"/>
+    </declare-styleable>
+
 </resources>
 

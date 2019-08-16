@@ -26,20 +26,25 @@ public @interface TaskPriority {
    */
   int LOWEST = 0;
   /**
-   * This task will only be scheduled when machine resources are available. Once running, it may be
-   * descheduled if higher priority work arrives (in this process or another) and its running on a
-   * non-critical thread.
+   * This task will only start running when machine resources are available. Dependending on the
+   * ThreadPolicy, it may run on a thread that is likely to be descheduled when higher priority work
+   * arrives (in this process or another). Examples: - Reporting metrics. - Persisting data to disk.
+   * - Loading data that is required for a potential future user interaction (Note: Use
+   * CreateUpdateableSequencedTaskRunner() to increase the priority when that user interactions
+   * happens).
    */
   int BEST_EFFORT = 0;
   /**
-   * This task affects UI or responsiveness of future user interactions. It is not an immediate
-   * response to a user interaction. Examples: - Updating the UI to reflect progress on a long task.
-   * - Loading data that might be shown in the UI after a future user interaction.
+   * The result of this task is visible to the user (in the UI or as a side-effect on the system)
+   * but it is not an immediate response to a user interaction. Examples: - Updating the UI to
+   * reflect progress on a long task. - Downloading a file requested by the user. - Loading an image
+   * that is displayed in the UI but is non-critical.
    */
   int USER_VISIBLE = 1;
   /**
-   * This task affects UI immediately after a user interaction. Example: Generating data shown in
-   * the UI immediately after a click.
+   * This task affects UI immediately after a user interaction. Example: - Loading and rendering a
+   * web page after the user clicks a link. - Sorting suggestions after the user types a character
+   * in the omnibox.
    */
   int USER_BLOCKING = 2;
   /**

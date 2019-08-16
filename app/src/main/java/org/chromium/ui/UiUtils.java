@@ -5,6 +5,7 @@
 package org.chromium.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
@@ -14,7 +15,10 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.SurfaceView;
@@ -62,8 +66,7 @@ public class UiUtils {
         sAndroidUiThemeBlacklist.put("xiaomi", Build.VERSION_CODES.N);
         // HTC doesn't respect theming flags on activity restart until Android O; this affects both
         // the system nav and status bar. More info at https://crbug.com/831737.
-        // Not needed for Android Studio project.
-        //sAndroidUiThemeBlacklist.put("htc", Build.VERSION_CODES.O);
+        sAndroidUiThemeBlacklist.put("htc", Build.VERSION_CODES.O);
     }
 
     /** Whether theming the Android system UI has been disabled. */
@@ -126,6 +129,11 @@ public class UiUtils {
          * Called when the photo picker dialog has been dismissed.
          */
         void onPhotoPickerDismissed();
+
+        /**
+         * Returns whether video decoding support is supported in the photo picker.
+         */
+        boolean supportsVideos();
     }
 
     // ContactsPickerDelegate:
@@ -181,6 +189,15 @@ public class UiUtils {
      */
     public static boolean shouldShowPhotoPicker() {
         return sPhotoPickerDelegate != null;
+    }
+
+    /**
+     * Returns whether the photo picker supports showing videos.
+     */
+    public static boolean photoPickerSupportsVideo() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
+        if (!shouldShowPhotoPicker()) return false;
+        return sPhotoPickerDelegate.supportsVideos();
     }
 
     /**
@@ -494,12 +511,12 @@ public class UiUtils {
 
     /**
      * Sets the navigation bar icons to dark or light. Note that this is only valid for Android
-     * O_MR1+.
+     * O+.
      * @param rootView The root view used to request updates to the system UI theme.
      * @param useDarkIcons Whether the navigation bar icons should be dark.
      */
     public static void setNavigationBarIconColor(View rootView, boolean useDarkIcons) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
 
         int systemUiVisibility = rootView.getSystemUiVisibility();
         if (useDarkIcons) {
@@ -508,5 +525,44 @@ public class UiUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * Extends {@link AlertDialog.Builder} to work around issues in support library. Note that
+     * any AlertDialogs shown in CustomTabActivity should be created from this class.
+     */
+    public static class CompatibleAlertDialogBuilder extends AlertDialog.Builder {
+        private final boolean mIsInNightMode;
+
+        public CompatibleAlertDialogBuilder(@NonNull Context context) {
+            super(context);
+            mIsInNightMode = isInNightMode(context);
+        }
+
+        public CompatibleAlertDialogBuilder(@NonNull Context context, int themeResId) {
+            super(context, themeResId);
+            mIsInNightMode = isInNightMode(context);
+        }
+
+        @Override
+        public AlertDialog create() {
+            AlertDialog dialog = super.create();
+            // Sets local night mode state to reflect the night mode state of the owner activity.
+            // This is to work around an issue in the support library that the dialog night mode
+            // state is not inheriting the night mode state of the owner activity, and also resets
+            // the night mode state of the owner activity. See https://crbug.com/966002 for details.
+            // TODO(https://crbug.com/966101): Remove this class once support library is updated to
+            // AndroidX.
+            dialog.getDelegate().setLocalNightMode(mIsInNightMode
+                            ? AppCompatDelegate.MODE_NIGHT_YES
+                            : AppCompatDelegate.MODE_NIGHT_NO);
+            return dialog;
+        }
+
+        private static boolean isInNightMode(Context context) {
+            return (context.getResources().getConfiguration().uiMode
+                           & Configuration.UI_MODE_NIGHT_MASK)
+                    == Configuration.UI_MODE_NIGHT_YES;
+        }
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.base.task;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Collections;
 import java.util.Set;
@@ -82,13 +83,14 @@ public class PostTask {
      */
     public static void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
         synchronized (sLock) {
-            if (sPreNativeTaskRunners != null) {
+            // Not needed for Android Studio project.
+            //if (sPreNativeTaskRunners != null || taskTraits.mIsChoreographerFrame) {
                 getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
-            } else {
-                nativePostDelayedTask(taskTraits.mPrioritySetExplicitly, taskTraits.mPriority,
-                        taskTraits.mMayBlock, taskTraits.mExtensionId, taskTraits.mExtensionData,
-                        task, delay);
-            }
+            /*} else {
+                PostTaskJni.get().postDelayedTask(taskTraits.mPrioritySetExplicitly,
+                        taskTraits.mPriority, taskTraits.mMayBlock, taskTraits.mUseThreadPool,
+                        taskTraits.mExtensionId, taskTraits.mExtensionData, task, delay);
+            }*/
         }
     }
 
@@ -239,10 +241,11 @@ public class PostTask {
     @CalledByNative
     private static void onNativeSchedulerReady() {
         synchronized (sLock) {
-            for (TaskRunner taskRunner : sPreNativeTaskRunners) {
+            Set<TaskRunner> preNativeTaskRunners = sPreNativeTaskRunners;
+            sPreNativeTaskRunners = null;
+            for (TaskRunner taskRunner : preNativeTaskRunners) {
                 taskRunner.initNativeTaskRunner();
             }
-            sPreNativeTaskRunners = null;
         }
     }
 
@@ -255,6 +258,10 @@ public class PostTask {
         }
     }
 
-    private static native void nativePostDelayedTask(boolean prioritySetExplicitly, int priority,
-            boolean mayBlock, byte extensionId, byte[] extensionData, Runnable task, long delay);
+    @NativeMethods
+    interface Natives {
+        void postDelayedTask(boolean prioritySetExplicitly, int priority, boolean mayBlock,
+                boolean useThreadPool, byte extensionId, byte[] extensionData, Runnable task,
+                long delay);
+    }
 }

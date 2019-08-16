@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.widget.selection;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewCompat;
@@ -28,8 +27,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import com.example.finnur.contactspicker.R;
 //import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegate;
 //import org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout;
-import org.chromium.chrome.browser.widget.FadingShadow;
-import org.chromium.chrome.browser.widget.FadingShadowView;
+import org.chromium.chrome.browser.ui.widget.FadingShadow;
+import org.chromium.chrome.browser.ui.widget.FadingShadowView;
 import org.chromium.chrome.browser.widget.LoadingView;
 import org.chromium.chrome.browser.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.chrome.browser.widget.displaystyle.HorizontalDisplayStyle;
@@ -72,29 +71,25 @@ public class SelectableListLayout<E>
         @Override
         public void onChanged() {
             super.onChanged();
-            updateEmptyViewVisibility();
-            if (mAdapter.getItemCount() == 0) {
-                mRecyclerView.setVisibility(View.GONE);
-            } else {
-                mRecyclerView.setVisibility(View.VISIBLE);
-            }
+            updateLayout();
             // At inflation, the RecyclerView is set to gone, and the loading view is visible. As
             // long as the adapter data changes, we show the recycler view, and hide loading view.
             mLoadingView.hideLoadingUI();
-
-            mToolbar.setSearchEnabled(mAdapter.getItemCount() != 0);
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             super.onItemRangeInserted(positionStart, itemCount);
-            updateEmptyViewVisibility();
+            updateLayout();
+            // At inflation, the RecyclerView is set to gone, and the loading view is visible. As
+            // long as the adapter data changes, we show the recycler view, and hide loading view.
+            mLoadingView.hideLoadingUI();
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             super.onItemRangeRemoved(positionStart, itemCount);
-            updateEmptyViewVisibility();
+            updateLayout();
         }
     };
 
@@ -230,18 +225,15 @@ public class SelectableListLayout<E>
     /**
      * Initializes the view shown when the selectable list is empty.
      *
-     * @param emptyDrawable The Drawable to show when the selectable list is empty.
      * @param emptyStringResId The string to show when the selectable list is empty.
      * @param searchEmptyStringResId The string to show when the selectable list is empty during
      *                               a search.
      * @return The {@link TextView} displayed when the list is empty.
      */
-    public TextView initializeEmptyView(
-            Drawable emptyDrawable, int emptyStringResId, int searchEmptyStringResId) {
+    public TextView initializeEmptyView(int emptyStringResId, int searchEmptyStringResId) {
         mEmptyStringResId = emptyStringResId;
         mSearchEmptyStringResId = searchEmptyStringResId;
 
-        mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, emptyDrawable, null, null);
         mEmptyView.setText(mEmptyStringResId);
 
         // Dummy listener to have the touch events dispatched to this view tree for navigation UI.
@@ -362,6 +354,17 @@ public class SelectableListLayout<E>
         int visible = mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE;
         mEmptyView.setVisibility(visible);
         mEmptyViewWrapper.setVisibility(visible);
+    }
+
+    private void updateLayout() {
+        updateEmptyViewVisibility();
+        if (mAdapter.getItemCount() == 0) {
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+
+        mToolbar.setSearchEnabled(mAdapter.getItemCount() != 0);
     }
 
     @VisibleForTesting

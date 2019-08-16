@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -50,7 +49,6 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -340,6 +338,12 @@ public class ApiCompatibilityUtils {
             }
         }
         ImageViewCompat.setImageTintList(view, tintList);
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
+            // Work around that the tint list is not cleared when setting tint list to null on L in
+            // some cases. See https://crbug.com/983686.
+            if (tintList == null) view.refreshDrawableState();
+        }
     }
 
     /**
@@ -503,20 +507,6 @@ public class ApiCompatibilityUtils {
             return inputMethodSubType.getLocale();
         }
     }
-
-    /**
-     * Get the URI for a downloaded file.
-     *
-     * @param file A downloaded file.
-     * @return URI for |file|.
-     */
-    /* Not used in the Android project, commented out to avoid pulling in dependencies.
-    public static Uri getUriForDownloadedFile(File file) {
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.M
-                ? FileUtils.getUriForFile(file)
-                : Uri.fromFile(file);
-    }
-    */
 
     /**
      * @see android.view.Window#FEATURE_INDETERMINATE_PROGRESS
