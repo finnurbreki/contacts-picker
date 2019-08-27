@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 ContactsPickerListener listener = new ContactsPickerListener() {
                     @Override
                     public void onContactsPickerUserAction(
-                            @ContactsPickerAction int action, List<Contact> contacts) {
+                            @ContactsPickerAction int action, List<Contact> contacts, int percentageShared, int propertiesRequested) {
                         switch (action) {
                             case ContactsPickerAction.CONTACTS_SELECTED:
                                 for (Contact contact : contacts) {
