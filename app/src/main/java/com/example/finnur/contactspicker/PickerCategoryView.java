@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;  // Android Studio project only.
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.LruCache;  // Android Studio project only.
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+import org.chromium.content.browser.contacts.ContactsPickerPropertiesRequested;
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
 
@@ -52,15 +54,6 @@ public class PickerCategoryView extends RelativeLayout
     private static final int ACTION_CANCEL = 0;
     private static final int ACTION_CONTACTS_SELECTED = 1;
     private static final int ACTION_BOUNDARY = 2;
-
-    // These values are written to logs as bitmasks (combination of names/emails and/or telephones).
-    // New enum values can be added, but existing enums must never be renumbered or deleted and
-    // reused.
-    private static final int PROPERTIES_NONE = 0;
-    private static final int PROPERTIES_TELS = 1 << 0;
-    private static final int PROPERTIES_EMAILS = 1 << 1;
-    private static final int PROPERTIES_NAMES = 1 << 2;
-    private static final int PROPERTIES_BOUNDARY = 1 << 3;
 
     // Constants for the RoundedIconGenerator.
     private static final int ICON_SIZE_DP = 36;
@@ -152,6 +145,7 @@ public class PickerCategoryView extends RelativeLayout
                 ICON_CORNER_RADIUS_DP, iconColor, ICON_TEXT_SIZE_DP);
 
         View root = LayoutInflater.from(context).inflate(R.layout.contacts_picker_dialog, this);
+        clampWidth(root, resources);
         mSelectableListLayout =
                 (SelectableListLayout<ContactDetails>) root.findViewById(R.id.selectable_list);
         mSelectableListLayout.initializeEmptyView(
@@ -167,6 +161,7 @@ public class PickerCategoryView extends RelativeLayout
                 false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
+        mToolbar.showBackArrow();
 
         mSearchButton = (ImageView) mToolbar.findViewById(R.id.search);
         mSearchButton.setOnClickListener(this);
@@ -200,6 +195,8 @@ public class PickerCategoryView extends RelativeLayout
         mDialog = dialog;
         mListener = listener;
 
+        mToolbar.setParentDialog(mDialog);
+
         mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -209,6 +206,16 @@ public class PickerCategoryView extends RelativeLayout
         });
 
         mPickerAdapter.notifyDataSetChanged();
+    }
+
+    private void clampWidth(View root, Resources resources) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int max_width = resources.getDimensionPixelSize(R.dimen.contacts_picker_contents_max_width);
+        if (width > max_width) {
+            root.setPadding((width - max_width) / 2, 0, (width - max_width) / 2, 0);
+        }
     }
 
     private void onStartSearch() {
@@ -228,7 +235,6 @@ public class PickerCategoryView extends RelativeLayout
     public void onEndSearch() {
         mPickerAdapter.setSearchString("");
         mPickerAdapter.setSearchMode(false);
-        mToolbar.showCloseButton();
         mToolbar.setNavigationOnClickListener(this);
         mDoneButton.setVisibility(VISIBLE);
         mSearchButton.setVisibility(VISIBLE);
@@ -393,10 +399,12 @@ public class PickerCategoryView extends RelativeLayout
         int contactCount = mPickerAdapter.getAllContacts().size();
         int percentageShared = (100 * selectCount) / contactCount;
 
-        int propertiesRequested = PROPERTIES_NONE;
-        if (includeNames) propertiesRequested |= PROPERTIES_NAMES;
-        if (includeEmails) propertiesRequested |= PROPERTIES_EMAILS;
-        if (includeTel) propertiesRequested |= PROPERTIES_TELS;
+        int propertiesRequested = ContactsPickerPropertiesRequested.PROPERTIES_NONE;
+        if (includeNames) propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_NAMES;
+        if (includeEmails) {
+            propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_EMAILS;
+        }
+        if (includeTel) propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_TELS;
 
         mListener.onContactsPickerUserAction(
                 action, contacts, percentageShared, propertiesRequested);
@@ -423,7 +431,7 @@ public class PickerCategoryView extends RelativeLayout
         RecordHistogram.recordPercentageHistogram(
                 "Android.ContactsPicker.SelectPercentage", percentageShared);
         RecordHistogram.recordEnumeratedHistogram("Android.ContactsPicker.PropertiesRequested",
-                propertiesRequested, PROPERTIES_BOUNDARY);
+                propertiesRequested, ContactsPickerPropertiesRequested.PROPERTIES_BOUNDARY);
     }
 
     @VisibleForTesting
