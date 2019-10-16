@@ -75,10 +75,8 @@
     <color name="light_icon_color">@color/modern_grey_500</color>
     <color name="modern_primary_color">@android:color/white</color>
     <color name="modern_secondary_color">@color/modern_grey_100</color>
-    <color name="ntp_bg">@color/default_primary_color</color>
     <color name="ripple_color_blue">@color/modern_blue_600</color>
     <color name="search_box_hint">@color/black_alpha_54</color>
-    <color name="selectable_list_item_highlight_color">#804281f4</color>
     <color name="toolbar_background_primary">@color/default_bg_color_elev_3</color>
     <color name="toolbar_background_primary_incognito">@color/modern_grey_800</color>
     <color name="toolbar_text_box_background">@color/modern_grey_100</color>

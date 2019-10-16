@@ -11,13 +11,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;  // Android Studio project only.
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.LruCache;  // Android Studio project only.
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.VisibleForTesting;
@@ -34,6 +32,7 @@ import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.content.browser.contacts.ContactsPickerPropertiesRequested;
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.widget.OptimizedFrameLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +44,7 @@ import java.util.Set;
  * A class for keeping track of common data associated with showing contact details in
  * the contacts picker, for example the RecyclerView.
  */
-public class PickerCategoryView extends RelativeLayout
+public class PickerCategoryView extends OptimizedFrameLayout
         implements View.OnClickListener, RecyclerView.RecyclerListener,
                    SelectionDelegate.SelectionObserver<ContactDetails>,
                    SelectableListToolbar.SearchDelegate, TopView.SelectAllToggleCallback {
@@ -125,8 +124,8 @@ public class PickerCategoryView extends RelativeLayout
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(Context context, boolean multiSelectionAllowed,
             boolean shouldIncludeNames, boolean shouldIncludeEmails, boolean shouldIncludeTel,
-            String formattedOrigin) {
-        super(context);
+            String formattedOrigin, ContactsPickerToolbar.ContactsToolbarDelegate delegate) {
+        super(context, null);
 
         mActivity = (Activity) context;
         mMultiSelectionAllowed = multiSelectionAllowed;
@@ -145,7 +144,6 @@ public class PickerCategoryView extends RelativeLayout
                 ICON_CORNER_RADIUS_DP, iconColor, ICON_TEXT_SIZE_DP);
 
         View root = LayoutInflater.from(context).inflate(R.layout.contacts_picker_dialog, this);
-        clampWidth(root, resources);
         mSelectableListLayout =
                 (SelectableListLayout<ContactDetails>) root.findViewById(R.id.selectable_list);
         mSelectableListLayout.initializeEmptyView(
@@ -161,7 +159,8 @@ public class PickerCategoryView extends RelativeLayout
                 false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
-        mToolbar.showBackArrow();
+        mToolbar.setDelegate(delegate);
+        mSelectableListLayout.configureWideDisplayStyle();
 
         mSearchButton = (ImageView) mToolbar.findViewById(R.id.search);
         mSearchButton.setOnClickListener(this);
@@ -195,8 +194,6 @@ public class PickerCategoryView extends RelativeLayout
         mDialog = dialog;
         mListener = listener;
 
-        mToolbar.setParentDialog(mDialog);
-
         mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -206,16 +203,6 @@ public class PickerCategoryView extends RelativeLayout
         });
 
         mPickerAdapter.notifyDataSetChanged();
-    }
-
-    private void clampWidth(View root, Resources resources) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-        int max_width = resources.getDimensionPixelSize(R.dimen.contacts_picker_contents_max_width);
-        if (width > max_width) {
-            root.setPadding((width - max_width) / 2, 0, (width - max_width) / 2, 0);
-        }
     }
 
     private void onStartSearch() {
@@ -397,7 +384,7 @@ public class PickerCategoryView extends RelativeLayout
             List<ContactsPickerListener.Contact> contacts, int umaId) {
         int selectCount = contacts != null ? contacts.size() : 0;
         int contactCount = mPickerAdapter.getAllContacts().size();
-        int percentageShared = (100 * selectCount) / contactCount;
+        int percentageShared = contactCount > 0 ? (100 * selectCount) / contactCount : 0;
 
         int propertiesRequested = ContactsPickerPropertiesRequested.PROPERTIES_NONE;
         if (includeNames) propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_NAMES;

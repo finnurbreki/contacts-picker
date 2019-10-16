@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotated method or class should never be inlined.
+ * Causes build to assert that annotated classes / methods / fields are
+ * optimized away in release builds (without dcheck_always_on).
  *
- * The annotated method (or methods on the annotated class) are guaranteed not to be inlined by
- * Proguard. Other optimizations may still apply. Do not use this annotation to fix class
- * verification errors - use the @VerifiesOnX annotations instead.
+ * Note that @RemovableInRelease implies @CheckDiscard.
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
-public @interface DoNotInline {}
+public @interface CheckDiscard {}

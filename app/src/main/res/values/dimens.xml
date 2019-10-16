@@ -9,7 +9,6 @@
     <dimen name="button_bg_vertical_inset">6dp</dimen>
     <dimen name="button_compat_corner_radius">4dp</dimen>
     <dimen name="card_padding">16dp</dimen>
-    <dimen name="contacts_picker_contents_max_width">600dp</dimen>
     <item name="chip_background_selected_alpha" format="float" type="dimen">0.06</item>
     <item name="chip_background_selected_focused_alpha" format="float" type="dimen">0.12</item>
     <dimen name="chip_bg_vertical_inset">8dp</dimen>
@@ -27,7 +26,6 @@
     <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
     <dimen name="default_ripple_background_border_size">0dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
-    <item name="disabled_text_alpha" format="float" type="dimen">0.38</item>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="headline_size">22sp</dimen>
     <dimen name="headline_size_medium">20sp</dimen>
@@ -39,7 +37,6 @@
     <dimen name="min_touch_target_size">48dp</dimen>
     <dimen name="modern_toolbar_background_size">36dp</dimen>
     <dimen name="modern_toolbar_background_corner_radius">18dp</dimen>
-    <dimen name="modern_toolbar_background_lateral_inset">2dp</dimen>
     <dimen name="search_toolbar_modern_bg_lateral_inset">8dp</dimen>
     <dimen name="search_toolbar_modern_bg_top_bottom_inset">10dp</dimen>
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
@@ -48,11 +45,9 @@
     <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
     <dimen name="tab_strip_height">0dp</dimen>
     <dimen name="text_size_medium">14sp</dimen>
-    <dimen name="text_size_medium_dense">13sp</dimen>
     <dimen name="text_size_medium_leading">20sp</dimen>
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="toolbar_height_no_shadow">56dp</dimen>
-    <dimen name="toolbar_modern_search_view_start_offset">4dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
 </resources>

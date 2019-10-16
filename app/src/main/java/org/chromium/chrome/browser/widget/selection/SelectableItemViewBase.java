@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.widget.selection;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,9 +12,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Checkable;
-import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate.SelectionObserver;
+import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 import java.util.List;
 
@@ -29,9 +30,9 @@ import java.util.List;
  *
  * @param <E> The type of the item associated with this SelectableItemViewBase.
  */
-public abstract class SelectableItemViewBase<E>
-        extends FrameLayout implements Checkable, OnClickListener, OnLongClickListener,
-                                       OnTouchListener, SelectionObserver<E> {
+public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLayout
+        implements Checkable, OnClickListener, OnLongClickListener, OnTouchListener,
+                   SelectionObserver<E> {
     // Heuristic value used to rule out long clicks preceded by long horizontal move. A long click
     // is ignored if finger was moved horizontally more than this threshold.
     private static final float LONG_CLICK_SLIDE_THRESHOLD_PX = 100.f;

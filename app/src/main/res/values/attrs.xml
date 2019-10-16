@@ -38,5 +38,9 @@
         <attr name="leading" format="reference|dimension"/>
     </declare-styleable>
 
+    <declare-styleable name="WrappingLayout">
+        <attr name="horizontalSpacing" format="dimension" />
+        <attr name="verticalSpacing" format="dimension" />
+    </declare-styleable>
 </resources>
 

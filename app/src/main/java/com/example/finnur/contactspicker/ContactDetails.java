@@ -5,7 +5,8 @@
 package com.example.finnur.contactspicker;
 
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 // import org.chromium.chrome.R;
 
@@ -142,11 +143,13 @@ public class ContactDetails implements Comparable<ContactDetails> {
             results.primaryEmail = "";
         } else {
             results.primaryEmail = mEmails.get(0);
-            if (mEmails.size() > 1) {
+            int totalAddresses = mEmails.size();
+            if (totalAddresses > 1) {
+                int hiddenAddresses = totalAddresses - 1;
                 // The Android Studio project doesn't have the fancy plural constants
-                results.overflowEmailCount = "(+ " + (mEmails.size() - 1) + " more)";
+                results.overflowEmailCount = "(+ " + hiddenAddresses + " more)";
                 //results.overflowEmailCount = resources.getQuantityString(
-                //        R.plurals.contacts_picker_more_details, (mEmails.size() - 1));
+                //        R.plurals.contacts_picker_more_details, hiddenAddresses, hiddenAddresses);
             }
         }
 
@@ -155,11 +158,13 @@ public class ContactDetails implements Comparable<ContactDetails> {
             results.primaryTelephoneNumber = "";
         } else {
             results.primaryTelephoneNumber = mPhoneNumbers.get(0);
-            if (mPhoneNumbers.size() > 1) {
+            int totalNumbers = mPhoneNumbers.size();
+            if (totalNumbers > 1) {
+                int hiddenNumbers = totalNumbers - 1;
                 // The Android Studio project doesn't have the fancy plural constants
-                results.overflowTelephoneNumberCount = "(+ " + (mPhoneNumbers.size() - 1) + " more)";
+                results.overflowTelephoneNumberCount = "(+ " + hiddenNumbers + " more)";
                 //results.overflowTelephoneNumberCount = resources.getQuantityString(
-                //        R.plurals.contacts_picker_more_details, (mPhoneNumbers.size() - 1));
+                //        R.plurals.contacts_picker_more_details, hiddenNumbers, hiddenNumbers);
             }
         }
 
