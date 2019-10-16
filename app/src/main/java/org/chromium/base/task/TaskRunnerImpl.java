@@ -74,9 +74,11 @@ public class TaskRunnerImpl implements TaskRunner {
 
     @GuardedBy("mLock")
     protected void destroyInternal() {
+        /* Not needed for Android Studio project.
         if (mNativeTaskRunnerAndroid != 0) {
             TaskRunnerImplJni.get().destroy(mNativeTaskRunnerAndroid);
         }
+        */
         mNativeTaskRunnerAndroid = 0;
     }
 
